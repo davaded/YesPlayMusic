@@ -60,6 +60,15 @@
 - ⌨️ 自定义快捷键和全局快捷键
 - 🎧 支持 Mpris
 - 🛠 更多特性开发中
+-   - 彻底移除 MV/视频体系：路由、页面、组件、API、搜索入口、库内 MV 标签
+      涉及文件：src/router/index.js、src/views/artist.vue、src/views/search.vue、src/views/searchType.vue、src/views/library.vue、src/api/mv.js、src/components/MvRow.vue
+- 移除视频播放器依赖与样式：plyr + src/assets/css/plyr.css
+- 去掉 PWA / service worker，改为纯 WebView 托管：
+  src/registerServiceWorker.js 已删除，vue.config.js 移除 pwa，package.json 删除 @vue/cli-plugin-pwa 和 register-service-worker
+- 清理 Apple Music / Nyancat / 倒序播放相关代码与文案
+- 删除未使用的 src/ncmModDef.js
+
+git config --global https.proxy http://127.0.0.1:10808
 
 ## 📦️ 安装
 

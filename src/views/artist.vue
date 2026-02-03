@@ -134,7 +134,12 @@
 
 <script>
 import { mapMutations, mapActions, mapState } from 'vuex';
-import { getArtist, getArtistAlbum, followAArtist, similarArtists } from '@/api/artist';
+import {
+  getArtist,
+  getArtistAlbum,
+  followAArtist,
+  similarArtists,
+} from '@/api/artist';
 import { getTrackDetail } from '@/api/track';
 import locale from '@/locale';
 import { isAccountLoggedIn } from '@/utils/auth';
@@ -437,8 +442,6 @@ export default {
     margin-bottom: 24px;
   }
 }
-
-
 
 .description-fulltext {
   font-size: 16px;

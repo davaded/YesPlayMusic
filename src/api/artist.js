@@ -3,7 +3,6 @@ import { mapTrackPlayableStatus } from '@/utils/common';
 import { isAccountLoggedIn } from '@/utils/auth';
 import { getTrackDetail } from '@/api/track';
 
-
 /**
  * 收藏歌手
  * 说明 : 调用此接口 , 传入歌手 id, 可收藏歌手

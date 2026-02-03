@@ -44,8 +44,7 @@ function extractCookiePairs(cookieString) {
 function refreshCookieKeyList() {
   const keys = Object.keys(localStorage)
     .filter(
-      key =>
-        key.startsWith(cookieStoragePrefix) && key !== cookieKeyListStorage
+      key => key.startsWith(cookieStoragePrefix) && key !== cookieKeyListStorage
     )
     .map(key => key.slice(cookieStoragePrefix.length));
   localStorage.setItem(cookieKeyListStorage, JSON.stringify(keys));
@@ -79,7 +78,9 @@ export function setCookies(string) {
 }
 
 export function getCookie(key) {
-  return Cookies.get(key) ?? localStorage.getItem(`${cookieStoragePrefix}${key}`);
+  return (
+    Cookies.get(key) ?? localStorage.getItem(`${cookieStoragePrefix}${key}`)
+  );
 }
 
 export function removeCookie(key) {

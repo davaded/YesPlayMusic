@@ -1,4 +1,3 @@
-
 export default {
   updateLikedXXX(state, { name, data }) {
     state.liked[name] = data;

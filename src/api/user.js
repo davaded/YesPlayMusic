@@ -1,6 +1,5 @@
 import request from '@/utils/request';
 
-
 /**
  * 上传歌曲到云盘（需要登录）
  */

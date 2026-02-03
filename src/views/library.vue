@@ -132,7 +132,6 @@
         />
       </div>
 
-
       <div v-show="currentTab === 'cloudDisk'">
         <TrackList
           :id="-8"

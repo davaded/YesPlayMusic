@@ -8,17 +8,13 @@
         <div class="name">{{ artist.name }}</div>
         <div class="artist">{{ $t('artist.artist') }}</div>
         <div class="statistics">
-          <a @click="scrollTo('popularTracks')"
-            >{{ artist.musicSize }} {{ $t('common.songs') }}</a
-          >
-          ·
-          <a @click="scrollTo('seeMore', 'start')"
-            >{{ artist.albumSize }} {{ $t('artist.withAlbums') }}</a
-          >
-          ·
-          <a @click="scrollTo('mvs')"
-            >{{ artist.mvSize }} {{ $t('artist.videos') }}</a
-          >
+          <a @click="scrollTo('popularTracks')">
+            {{ artist.musicSize }} {{ $t('common.songs') }}
+          </a>
+          /
+          <a @click="scrollTo('seeMore', 'start')">
+            {{ artist.albumSize }} {{ $t('artist.withAlbums') }}
+          </a>
         </div>
         <div class="description" @click="toggleFullDescription">
           {{ artist.briefDesc }}
@@ -68,37 +64,6 @@
             </div>
           </div>
         </div>
-        <div v-show="latestMV.id" class="container latest-mv">
-          <div
-            class="cover"
-            @mouseover="mvHover = true"
-            @mouseleave="mvHover = false"
-            @click="goToMv(latestMV.id)"
-          >
-            <img :src="latestMV.coverUrl" loading="lazy" />
-            <transition name="fade">
-              <div
-                v-show="mvHover"
-                class="shadow"
-                :style="{
-                  background: 'url(' + latestMV.coverUrl + ')',
-                }"
-              ></div>
-            </transition>
-          </div>
-          <div class="info">
-            <div class="name">
-              <router-link :to="'/mv/' + latestMV.id">{{
-                latestMV.name
-              }}</router-link>
-            </div>
-            <div class="date">
-              {{ latestMV.publishTime | formatDate }}
-            </div>
-            <div class="type">{{ $t('artist.latestMV') }}</div>
-          </div>
-        </div>
-        <div v-show="!latestMV.id"></div>
       </div>
     </div>
     <div id="popularTracks" class="popular-tracks">
@@ -123,15 +88,6 @@
         :sub-text="'releaseYear'"
         :show-play-button="true"
       />
-    </div>
-    <div v-if="mvs.length !== 0" id="mvs" class="mvs">
-      <div class="section-title"
-        >MVs
-        <router-link v-show="hasMoreMV" :to="`/artist/${artist.id}/mv`">{{
-          $t('home.seeMore')
-        }}</router-link>
-      </div>
-      <MvRow :mvs="mvs" subtitle="publishTime" />
     </div>
     <div v-if="eps.length !== 0" class="eps">
       <div class="section-title">{{ $t('artist.EPsSingles') }}</div>
@@ -178,13 +134,7 @@
 
 <script>
 import { mapMutations, mapActions, mapState } from 'vuex';
-import {
-  getArtist,
-  getArtistAlbum,
-  artistMv,
-  followAArtist,
-  similarArtists,
-} from '@/api/artist';
+import { getArtist, getArtistAlbum, followAArtist, similarArtists } from '@/api/artist';
 import { getTrackDetail } from '@/api/track';
 import locale from '@/locale';
 import { isAccountLoggedIn } from '@/utils/auth';
@@ -195,7 +145,6 @@ import ContextMenu from '@/components/ContextMenu.vue';
 import TrackList from '@/components/TrackList.vue';
 import CoverRow from '@/components/CoverRow.vue';
 import Cover from '@/components/Cover.vue';
-import MvRow from '@/components/MvRow.vue';
 import Modal from '@/components/Modal.vue';
 
 export default {
@@ -205,7 +154,6 @@ export default {
     ButtonTwoTone,
     TrackList,
     CoverRow,
-    MvRow,
     Modal,
     ContextMenu,
   },
@@ -233,10 +181,7 @@ export default {
       },
       showMorePopTracks: false,
       showFullDescription: false,
-      mvs: [],
-      hasMoreMV: false,
       similarArtists: [],
-      mvHover: false,
     };
   },
   computed: {
@@ -250,15 +195,6 @@ export default {
       return this.albumsData.filter(a =>
         ['EP/Single', 'EP', 'Single'].includes(a.type)
       );
-    },
-    latestMV() {
-      const mv = this.mvs[0] || {};
-      return {
-        id: mv.id || mv.vid,
-        name: mv.name || mv.title,
-        coverUrl: `${mv.imgurl16v9 || mv.cover || mv.coverUrl}?param=464y260`,
-        publishTime: mv.publishTime,
-      };
     },
   },
   activated() {
@@ -288,10 +224,6 @@ export default {
         this.albumsData = data.hotAlbums;
         this.latestRelease = data.hotAlbums[0];
       });
-      artistMv({ id }).then(data => {
-        this.mvs = data.mvs;
-        this.hasMoreMV = data.hasMore;
-      });
       if (isAccountLoggedIn()) {
         similarArtists(id).then(data => {
           this.similarArtists = data.artists;
@@ -309,9 +241,6 @@ export default {
         name: 'album',
         params: { id },
       });
-    },
-    goToMv(id) {
-      this.$router.push({ path: '/mv/' + id });
     },
     playPopularSongs(trackID = 'first') {
       let trackIDs = this.popularTracks.map(t => t.id);
@@ -509,41 +438,7 @@ export default {
   }
 }
 
-.latest-mv {
-  .cover {
-    position: relative;
-    transition: transform 0.3s;
-    &:hover {
-      cursor: pointer;
-    }
-  }
-  img {
-    border-radius: 0.75em;
-    height: 128px;
-    object-fit: cover;
-    user-select: none;
-  }
 
-  .shadow {
-    position: absolute;
-    top: 6px;
-    height: 100%;
-    width: 100%;
-    filter: blur(16px) opacity(0.4);
-    transform: scale(0.9, 0.9);
-    z-index: -1;
-    background-size: cover;
-    border-radius: 0.75em;
-  }
-
-  .fade-enter-active,
-  .fade-leave-active {
-    transition: opacity 0.3s;
-  }
-  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-    opacity: 0;
-  }
-}
 
 .description-fulltext {
   font-size: 16px;

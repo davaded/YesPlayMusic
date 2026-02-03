@@ -105,7 +105,7 @@
       <div
         v-show="mode !== 'qrCode'"
         class="notice"
-        v-html="isElectron ? $t('login.noticeElectron') : $t('login.notice')"
+        v-html="$t('login.notice')"
       ></div>
     </div>
   </div>
@@ -142,11 +142,6 @@ export default {
       qrCodeCheckInterval: null,
       qrCodeInformation: '打开网易云音乐APP扫码登录',
     };
-  },
-  computed: {
-    isElectron() {
-      return process.env.IS_ELECTRON;
-    },
   },
   created() {
     if (['phone', 'email', 'qrCode'].includes(this.$route.query.mode)) {
@@ -280,7 +275,6 @@ export default {
             clearInterval(this.qrCodeCheckInterval);
             this.qrCodeInformation = '登录成功，请稍等...';
             result.code = 200;
-            result.cookie = result.cookie.replaceAll(' HTTPOnly', '');
             this.handleLoginResponse(result);
           }
         });

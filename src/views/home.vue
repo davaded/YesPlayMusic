@@ -1,18 +1,6 @@
 <template>
   <div v-show="show" class="home">
-    <div
-      v-if="settings.showPlaylistsByAppleMusic !== false"
-      class="index-row first-row"
-    >
-      <div class="title"> by Apple Music </div>
-      <CoverRow
-        :type="'playlist'"
-        :items="byAppleMusic"
-        sub-text="appleMusic"
-        :image-size="1024"
-      />
-    </div>
-    <div class="index-row">
+    <div class="index-row first-row">
       <div class="title">
         {{ $t('home.recommendPlaylist') }}
         <router-link to="/explore?category=推荐歌单">{{
@@ -72,7 +60,6 @@
 import { toplists } from '@/api/playlist';
 import { toplistOfArtists } from '@/api/artist';
 import { newAlbums } from '@/api/album';
-import { byAppleMusic } from '@/utils/staticData';
 import { getRecommendPlayList } from '@/utils/playList';
 import NProgress from 'nprogress';
 import { mapState } from 'vuex';
@@ -100,9 +87,6 @@ export default {
   },
   computed: {
     ...mapState(['settings']),
-    byAppleMusic() {
-      return byAppleMusic;
-    },
   },
   activated() {
     this.loadData();

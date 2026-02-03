@@ -27,7 +27,6 @@ export default {
     playlists: 'Playlists',
     albums: 'Albums',
     artists: 'Artists',
-    mvs: 'MVs',
     cloudDisk: 'Cloud Disk',
     newPlayList: 'New Playlist',
     uploadSongs: 'Upload Songs',
@@ -47,7 +46,6 @@ export default {
   },
   artist: {
     latestRelease: 'Latest Releases',
-    latestMV: 'Latest MV',
     popularSongs: 'Popular Songs',
     showMore: 'SHOW MORE',
     showLess: 'SHOW LESS',
@@ -55,7 +53,6 @@ export default {
     albums: 'Albums',
     withAlbums: 'Albums',
     artist: 'Artist',
-    videos: 'Music Videos',
     following: 'Following',
     follow: 'Follow',
     similarArtists: 'Similar Artists',
@@ -93,9 +90,6 @@ export default {
     noticeElectron: `Your password will be MD5 encrypted locally and then transmitted to NetEase Music API.<br />
       YesPlayMusic promises not to save any of your account information to the cloud.<br />`,
   },
-  mv: {
-    moreVideo: 'More Videos',
-  },
   next: {
     nowPlaying: 'Now Playing',
     nextUp: 'Next Up',
@@ -108,7 +102,6 @@ export default {
     repeat: 'Repeat',
     repeatTrack: 'Repeat Track',
     shuffle: 'Shuffle',
-    reversed: 'Reversed',
     play: 'Play',
     pause: 'Pause',
     mute: 'Mute',
@@ -123,7 +116,6 @@ export default {
     artist: 'Artists',
     album: 'Albums',
     song: 'Songs',
-    mv: 'Music Videos',
     playlist: 'Playlists',
     noResult: 'No Results',
     searchFor: 'Search for',
@@ -179,12 +171,8 @@ export default {
     clearSongsCache: 'Clear Songs Cache',
     cacheCount: 'Cached {song} songs ({size})',
     showLyricsTranslation: 'Show lyrics translation',
-    showPlaylistsByAppleMusic: 'Show playlists by Apple Music',
     enableDiscordRichPresence: 'Enable Discord Rich Presence',
     enableGlobalShortcut: 'Enable Global Shortcut',
-    showLibraryDefault: 'Show Library after App Launched',
-    subTitleDefault: 'Show Alias for Subtitle by default',
-    enableReversedMode: 'Enable Reversed Mode (Experimental)',
     enableCustomTitlebar: 'Enable custom title bar (Need restart)',
     showLyricsTime: 'Display current time',
     lyricsBackground: {

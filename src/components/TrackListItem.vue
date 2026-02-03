@@ -89,7 +89,6 @@
 <script>
 import ArtistsInLine from '@/components/ArtistsInLine.vue';
 import ExplicitSymbol from '@/components/ExplicitSymbol.vue';
-import { mapState } from 'vuex';
 import { isNil } from 'lodash';
 
 export default {
@@ -110,7 +109,6 @@ export default {
   },
 
   computed: {
-    ...mapState(['settings']),
     track() {
       return this.type === 'cloudDisk'
         ? this.trackProp.simpleSong
@@ -144,12 +142,7 @@ export default {
         tn = this.track.tns[0];
       }
 
-      //优先显示alia
-      if (this.$store.state.settings.subTitleDefault) {
-        return this.track?.alia?.length > 0 ? this.track.alia[0] : tn;
-      } else {
-        return tn === undefined ? this.track.alia[0] : tn;
-      }
+      return tn === undefined ? this.track.alia[0] : tn;
     },
     type() {
       return this.$parent.type;
@@ -192,9 +185,7 @@ export default {
       );
     },
     showUnavailableSongInGreyStyle() {
-      return process.env.IS_ELECTRON
-        ? !this.$store.state.settings.enableUnblockNeteaseMusic
-        : true;
+      return true;
     },
     showLikeButton() {
       return this.type !== 'tracklist' && this.type !== 'cloudDisk';

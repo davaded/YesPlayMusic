@@ -1,13 +1,6 @@
 <template>
   <div class="player" @click="handleClick" @mousedown="handleMouseDown">
-    <div
-      class="progress-bar"
-      :class="{
-        nyancat: settings.nyancatStyle,
-        'nyancat-stop': settings.nyancatStyle && !player.playing,
-      }"
-      @click.stop
-    >
+    <div class="progress-bar" @click.stop>
       <vue-slider
         v-model="player.progress"
         :min="0"
@@ -137,13 +130,6 @@
             @click.native="switchShuffle"
             ><svg-icon icon-class="shuffle"
           /></button-icon>
-          <button-icon
-            v-if="settings.enableReversedMode"
-            :class="{ active: player.reversed, disabled: player.isPersonalFM }"
-            :title="$t('player.reversed')"
-            @click.native="switchReversed"
-            ><svg-icon icon-class="sort-up"
-          /></button-icon>
           <div class="volume-control">
             <button-icon :title="$t('player.mute')" @click.native="mute">
               <svg-icon v-show="volume > 0.5" icon-class="volume" />
@@ -201,7 +187,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(['player', 'settings', 'data']),
+    ...mapState(['player']),
     currentTrack() {
       return this.player.currentTrack;
     },
@@ -283,9 +269,6 @@ export default {
     },
     switchShuffle() {
       this.player.switchShuffle();
-    },
-    switchReversed() {
-      this.player.switchReversed();
     },
     mute() {
       this.player.mute();

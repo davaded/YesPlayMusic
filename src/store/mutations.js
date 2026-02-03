@@ -1,5 +1,3 @@
-import shortcuts from '@/utils/shortcuts';
-import cloneDeep from 'lodash/cloneDeep';
 
 export default {
   updateLikedXXX(state, { name, data }) {
@@ -16,9 +14,6 @@ export default {
   },
   changeLyricFontSize(state, value) {
     state.settings.lyricFontSize = value;
-  },
-  changeOutputDevice(state, deviceId) {
-    state.settings.outputDevice = deviceId;
   },
   updateSettings(state, { key, value }) {
     state.settings[key] = value;
@@ -54,20 +49,6 @@ export default {
   },
   updateDailyTracks(state, dailyTracks) {
     state.dailyTracks = dailyTracks;
-  },
-  updateLastfm(state, session) {
-    state.lastfm = session;
-  },
-  updateShortcut(state, { id, type, shortcut }) {
-    let newShortcut = state.settings.shortcuts.find(s => s.id === id);
-    newShortcut[type] = shortcut;
-    state.settings.shortcuts = state.settings.shortcuts.map(s => {
-      if (s.id !== id) return s;
-      return newShortcut;
-    });
-  },
-  restoreDefaultShortcuts(state) {
-    state.settings.shortcuts = cloneDeep(shortcuts);
   },
   enableScrolling(state, status = null) {
     state.enableScrolling = status ? status : !state.enableScrolling;

@@ -45,16 +45,6 @@
       <TrackList :tracks="tracks" type="tracklist" />
     </div>
 
-    <div v-show="musicVideos.length > 0" class="music-videos">
-      <div class="section-title"
-        >{{ $t('search.mv')
-        }}<router-link :to="`/search/${keywords}/music-videos`">{{
-          $t('home.seeMore')
-        }}</router-link></div
-      >
-      <MvRow :mvs="musicVideos.slice(0, 5)" />
-    </div>
-
     <div v-show="playlists.length > 0" class="playlists">
       <div class="section-title"
         >{{ $t('search.playlist')
@@ -91,14 +81,12 @@ import { search } from '@/api/others';
 import NProgress from 'nprogress';
 
 import TrackList from '@/components/TrackList.vue';
-import MvRow from '@/components/MvRow.vue';
 import CoverRow from '@/components/CoverRow.vue';
 
 export default {
   name: 'Search',
   components: {
     TrackList,
-    MvRow,
     CoverRow,
   },
   data() {
@@ -108,7 +96,6 @@ export default {
       artists: [],
       albums: [],
       playlists: [],
-      musicVideos: [],
     };
   },
   computed: {
@@ -120,8 +107,7 @@ export default {
         this.tracks.length +
           this.artists.length +
           this.albums.length +
-          this.playlists.length +
-          this.musicVideos.length >
+          this.playlists.length >
         0
       );
     },
@@ -141,11 +127,9 @@ export default {
       let track = this.tracks.find(t => t.id === id);
       this.$store.state.player.appendTrackToPlayerList(track, true);
     },
-    search(type = 'all') {
+    search(type = 'tracks') {
       let showToast = this.showToast;
       const typeTable = {
-        all: 1018,
-        musicVideos: 1004,
         tracks: 1,
         albums: 10,
         artists: 100,
@@ -178,12 +162,6 @@ export default {
             if (result.result === undefined) return;
             result = result.result;
             switch (searchType) {
-              case 'all':
-                this.result = result;
-                break;
-              case 'musicVideos':
-                this.musicVideos = result.mvs ?? [];
-                break;
               case 'artists':
                 this.artists = result.artists ?? [];
                 break;
@@ -209,7 +187,7 @@ export default {
         this.search('albums'),
         this.search('tracks'),
       ];
-      const requests2 = [this.search('musicVideos'), this.search('playlists')];
+      const requests2 = [this.search('playlists')];
 
       requestAll(requests);
       requestAll(requests2);
@@ -258,7 +236,6 @@ export default {
 }
 
 .tracks,
-.music-videos,
 .playlists {
   margin-top: 46px;
 }

@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import { isLooseLoggedIn, isAccountLoggedIn } from '@/utils/auth';
+import { isFileProtocol, isWebView } from '@/utils/runtime';
 
 Vue.use(VueRouter);
 const routes = [
@@ -46,19 +47,6 @@ const routes = [
       keepAlive: true,
       savePosition: true,
     },
-  },
-  {
-    path: '/artist/:id/mv',
-    name: 'artistMV',
-    component: () => import('@/views/artistMV.vue'),
-    meta: {
-      keepAlive: true,
-    },
-  },
-  {
-    path: '/mv/:id',
-    name: 'mv',
-    component: () => import('@/views/mv.vue'),
   },
   {
     path: '/next',
@@ -127,15 +115,12 @@ const routes = [
       requireAccountLogin: true,
     },
   },
-  {
-    path: '/lastfm/callback',
-    name: 'lastfmCallback',
-    component: () => import('@/views/lastfmCallback.vue'),
-  },
 ];
 
+const routerMode = isWebView || isFileProtocol ? 'hash' : 'history';
+
 const router = new VueRouter({
-  mode: process.env.IS_ELECTRON ? 'hash' : 'history',
+  mode: routerMode,
   routes,
 });
 
@@ -157,11 +142,7 @@ router.beforeEach((to, from, next) => {
     if (isLooseLoggedIn()) {
       next();
     } else {
-      if (process.env.IS_ELECTRON === true) {
-        next({ path: '/login/account' });
-      } else {
-        next({ path: '/login' });
-      }
+      next({ path: '/login' });
     }
   } else {
     next();

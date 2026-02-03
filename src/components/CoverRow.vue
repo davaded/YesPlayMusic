@@ -90,7 +90,6 @@ export default {
         }
         return `${albumType} · ${new Date(item.publishTime).getFullYear()}`;
       }
-      if (this.subText === 'appleMusic') return 'by Apple Music';
     },
     isPrivacy(item) {
       return this.type === 'playlist' && item.privacy === 10;

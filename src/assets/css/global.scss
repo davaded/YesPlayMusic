@@ -77,6 +77,70 @@ html {
   overscroll-behavior: none;
 }
 
+html[data-webview='true'] {
+  min-width: 0;
+}
+
+html[data-webview='true'],
+html[data-webview='true'] body,
+html[data-webview='true'] #app {
+  height: 100%;
+}
+
+html[data-car-ui='true'] {
+  --car-padding-h: 4vw;
+  --car-navbar-height: 56px;
+  --car-player-height: 72px;
+}
+
+html[data-car-ui='true'] #app main {
+  padding: var(--car-navbar-height) var(--car-padding-h)
+    calc(var(--car-player-height) + 16px) var(--car-padding-h);
+}
+
+html[data-car-ui='true'] #app nav {
+  height: var(--car-navbar-height);
+  padding-left: var(--car-padding-h);
+  padding-right: var(--car-padding-h);
+}
+
+html[data-car-ui='true'] #app .navigation-links a {
+  font-size: 16px;
+  padding: 6px 8px;
+}
+
+html[data-car-ui='true'] #app .search-box .container {
+  width: 160px;
+  height: 30px;
+}
+
+html[data-car-ui='true'] #app .navigation-buttons .svg-icon {
+  height: 22px;
+  width: 22px;
+}
+
+html[data-car-ui='true'] #app .player {
+  height: var(--car-player-height);
+}
+
+html[data-car-ui='true'] #app .player .controls {
+  padding-left: var(--car-padding-h);
+  padding-right: var(--car-padding-h);
+}
+
+html[data-car-ui='true'] #app .player .middle-control-buttons .play {
+  height: 48px;
+  width: 48px;
+}
+
+html[data-car-ui='true'] #app .player .track-info .name {
+  font-size: 18px;
+}
+
+html[data-car-ui='true'] #app .player .track-info .artist {
+  font-size: 13px;
+}
+
 select,
 button {
   font-family: inherit;
@@ -99,14 +163,6 @@ a {
   cursor: pointer;
   &:hover {
     text-decoration: underline;
-  }
-}
-
-[data-electron='yes'] {
-  button,
-  .navigation-links a,
-  .playlist-info .description {
-    cursor: default !important;
   }
 }
 

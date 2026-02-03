@@ -27,7 +27,6 @@ export default {
     playlists: 'Çalma Listeleri',
     albums: 'Albümler',
     artists: 'Sanatçılar',
-    mvs: 'MVs',
     cloudDisk: 'Cloud Disk',
     newPlayList: 'Yeni Çalma Listesi',
     uploadSongs: 'Upload Songs',
@@ -54,7 +53,6 @@ export default {
     albums: 'Albümler',
     withAlbums: 'Albümler',
     artist: 'Sanatçı',
-    videos: 'Müzik Videoları',
     following: 'Takip Ediyor',
     follow: 'Takip Et',
   },
@@ -89,9 +87,6 @@ export default {
     noticeElectron: `YesPlayMusic hesabınızın hiçbir bilgisini kaydetmeyeceğine dair söz veriyor<br />
       Şifren MD5 şifreleme ile yerel olarak şifrelenir ve daha sonra NetEase Müzik API'sine gönderilir<br />`,
   },
-  mv: {
-    moreVideo: 'Daha Fazla Video',
-  },
   next: {
     nowPlaying: 'Şuan çalıyor',
     nextUp: 'Sıradaki',
@@ -118,7 +113,6 @@ export default {
     artist: 'Sanatçılar',
     album: 'Albümler',
     song: 'Müzikler',
-    mv: 'Müzik Videoları',
     playlist: 'Çalma Listeleri',
     noResult: 'Sonuç Bulunamadı',
     searchFor: 'Search for',
@@ -174,11 +168,7 @@ export default {
     clearSongsCache: 'Müzik çerezlerini temizle',
     cacheCount: 'Çerezlenen {song} Müzikler ({size})',
     showLyricsTranslation: 'Müzik sözlerinin çevirilerini göster',
-    showPlaylistsByAppleMusic: "Apple Music'in Çalma Listelerini Göster",
     enableDiscordRichPresence: 'Discord gösterimini aktifleştir',
-    showLibraryDefault: 'Kitaplık Varsayılanını göster',
-    subTitleDefault: 'Show Alias for Subtitle by default',
-    enableReversedMode: 'Enable Reversed Mode (Experimental)',
     enableCustomTitlebar: 'Enable custom title bar (Need restart)',
     lyricsBackground: {
       text: 'Şarkı Sözleri Arka Planını Göster',

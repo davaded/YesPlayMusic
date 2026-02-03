@@ -24,7 +24,6 @@ export default {
     playlists: '歌单',
     albums: '专辑',
     artists: '艺人',
-    mvs: 'MV',
     cloudDisk: '云盘',
     newPlayList: '新建歌单',
     uploadSongs: '上传歌曲',
@@ -44,7 +43,6 @@ export default {
   },
   artist: {
     latestRelease: '最新发布',
-    latestMV: '最新 MV',
     popularSongs: '热门歌曲',
     showMore: '显示更多',
     showLess: '收起',
@@ -52,7 +50,6 @@ export default {
     albums: '专辑',
     withAlbums: '张专辑',
     artist: '艺人',
-    videos: '个 MV',
     following: '正在关注',
     follow: '关注',
     similarArtists: '相似艺人',
@@ -94,9 +91,6 @@ export default {
     noticeElectron: `你的密码会在本地进行 MD5 加密后再传输到网易云 API。<br />
       YesPlayMusic 不会传输你的账号数据到任何非网易云音乐官方的服务器。<br />`,
   },
-  mv: {
-    moreVideo: '更多视频',
-  },
   next: {
     nowPlaying: '正在播放',
     nextUp: '即将播放',
@@ -109,7 +103,6 @@ export default {
     repeat: '循环播放',
     repeatTrack: '单曲循环',
     shuffle: '随机播放',
-    reversed: '倒序播放',
     play: '播放',
     pause: '暂停',
     mute: '静音',
@@ -124,7 +117,6 @@ export default {
     artist: '艺人',
     album: '专辑',
     song: '歌曲',
-    mv: '视频',
     playlist: '歌单',
     noResult: '暂无结果',
     searchFor: '搜索',
@@ -180,12 +172,8 @@ export default {
     clearSongsCache: '清除歌曲缓存',
     cacheCount: '已缓存 {song} 首 ({size})',
     showLyricsTranslation: '显示歌词翻译',
-    showPlaylistsByAppleMusic: '首页显示来自 Apple Music 的歌单',
     enableDiscordRichPresence: '启用 Discord Rich Presence',
     enableGlobalShortcut: '启用全局快捷键',
-    showLibraryDefault: '启动后显示音乐库',
-    subTitleDefault: '副标题使用别名',
-    enableReversedMode: '启用倒序播放功能 (实验性功能)',
     enableCustomTitlebar: '启用自定义标题栏 (重启后生效)',
     lyricsBackground: {
       text: '显示歌词背景',

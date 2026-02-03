@@ -31,7 +31,6 @@ import Scrollbar from './components/Scrollbar.vue';
 import Navbar from './components/Navbar.vue';
 import Player from './components/Player.vue';
 import Toast from './components/Toast.vue';
-import { ipcRenderer } from './electron/ipcRenderer';
 import { isAccountLoggedIn, isLooseLoggedIn } from '@/utils/auth';
 import Lyrics from './views/lyrics.vue';
 import { mapState } from 'vuex';
@@ -49,7 +48,6 @@ export default {
   },
   data() {
     return {
-      isElectron: process.env.IS_ELECTRON, // true || undefined
       userSelectNone: false,
     };
   },
@@ -60,24 +58,19 @@ export default {
     },
     showPlayer() {
       return (
-        [
-          'mv',
-          'loginUsername',
-          'login',
-          'loginAccount',
-          'lastfmCallback',
-        ].includes(this.$route.name) === false
+        ['loginUsername', 'login', 'loginAccount'].includes(
+          this.$route.name
+        ) === false
       );
     },
     enablePlayer() {
-      return this.player.enabled && this.$route.name !== 'lastfmCallback';
+      return this.player.enabled;
     },
     showNavbar() {
-      return this.$route.name !== 'lastfmCallback';
+      return true;
     },
   },
   created() {
-    if (this.isElectron) ipcRenderer(this);
     window.addEventListener('keydown', this.handleKeydown);
     this.fetchData();
   },
@@ -85,7 +78,6 @@ export default {
     handleKeydown(e) {
       if (e.code === 'Space') {
         if (e.target.tagName === 'INPUT') return false;
-        if (this.$route.name === 'mv') return false;
         e.preventDefault();
         this.player.playOrPause();
       }
@@ -98,7 +90,6 @@ export default {
       if (isAccountLoggedIn()) {
         this.$store.dispatch('fetchLikedAlbums');
         this.$store.dispatch('fetchLikedArtists');
-        this.$store.dispatch('fetchLikedMVs');
         this.$store.dispatch('fetchCloudDisk');
       }
     },

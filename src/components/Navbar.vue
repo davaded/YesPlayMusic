@@ -1,8 +1,6 @@
 <template>
   <div>
-    <nav :class="{ 'has-custom-titlebar': hasCustomTitlebar }">
-      <Win32Titlebar v-if="enableWin32Titlebar" />
-      <LinuxTitlebar v-if="enableLinuxTitlebar" />
+    <nav>
       <div class="navigation-buttons">
         <button-icon @click.native="go('back')"
           ><svg-icon icon-class="arrow-left"
@@ -78,20 +76,12 @@
 import { mapState } from 'vuex';
 import { isLooseLoggedIn, doLogout } from '@/utils/auth';
 
-// import icons for win32 title bar
-// icons by https://github.com/microsoft/vscode-codicons
-import 'vscode-codicons/dist/codicon.css';
-
-import Win32Titlebar from '@/components/Win32Titlebar.vue';
-import LinuxTitlebar from '@/components/LinuxTitlebar.vue';
 import ContextMenu from '@/components/ContextMenu.vue';
 import ButtonIcon from '@/components/ButtonIcon.vue';
 
 export default {
   name: 'Navbar',
   components: {
-    Win32Titlebar,
-    LinuxTitlebar,
     ButtonIcon,
     ContextMenu,
   },
@@ -100,12 +90,10 @@ export default {
       inputFocus: false,
       langs: ['zh-CN', 'zh-TW', 'en', 'tr'],
       keywords: '',
-      enableWin32Titlebar: false,
-      enableLinuxTitlebar: false,
     };
   },
   computed: {
-    ...mapState(['settings', 'data']),
+    ...mapState(['data']),
     isLooseLoggedIn() {
       return isLooseLoggedIn();
     },
@@ -114,19 +102,6 @@ export default {
         ? `${this.data?.user?.avatarUrl}?param=512y512`
         : 'http://s4.music.126.net/style/web2/img/default/default_avatar.jpg?param=60y60';
     },
-    hasCustomTitlebar() {
-      return this.enableWin32Titlebar || this.enableLinuxTitlebar;
-    },
-  },
-  created() {
-    if (process.platform === 'win32') {
-      this.enableWin32Titlebar = true;
-    } else if (
-      process.platform === 'linux' &&
-      this.settings.linuxEnableCustomTitlebar
-    ) {
-      this.enableLinuxTitlebar = true;
-    }
   },
   methods: {
     go(where) {
@@ -161,11 +136,7 @@ export default {
       window.open('https://github.com/qier222/YesPlayMusic');
     },
     toLogin() {
-      if (process.env.IS_ELECTRON === true) {
-        this.$router.push({ name: 'loginAccount' });
-      } else {
-        this.$router.push({ name: 'login' });
-      }
+      this.$router.push({ name: 'login' });
     },
   },
 };
@@ -189,7 +160,6 @@ nav {
 
   background-color: var(--color-navbar-bg);
   z-index: 100;
-  -webkit-app-region: drag;
 }
 
 @media (max-width: 1336px) {
@@ -204,11 +174,6 @@ nav {
   }
 }
 
-nav.has-custom-titlebar {
-  padding-top: 20px;
-  -webkit-app-region: no-drag;
-}
-
 .navigation-buttons {
   flex: 1;
   display: flex;
@@ -216,9 +181,6 @@ nav.has-custom-titlebar {
   .svg-icon {
     height: 24px;
     width: 24px;
-  }
-  button {
-    -webkit-app-region: no-drag;
   }
 }
 @media (max-width: 970px) {
@@ -234,7 +196,6 @@ nav.has-custom-titlebar {
   text-transform: uppercase;
   user-select: none;
   a {
-    -webkit-app-region: no-drag;
     font-size: 18px;
     font-weight: 700;
     text-decoration: none;
@@ -270,7 +231,6 @@ nav.has-custom-titlebar {
 .search-box {
   display: flex;
   justify-content: flex-end;
-  -webkit-app-region: no-drag;
 
   .container {
     display: flex;
@@ -335,7 +295,6 @@ nav.has-custom-titlebar {
     vertical-align: -7px;
     border-radius: 50%;
     cursor: pointer;
-    -webkit-app-region: no-drag;
     -webkit-user-drag: none;
     &:hover {
       filter: brightness(80%);
@@ -343,7 +302,6 @@ nav.has-custom-titlebar {
   }
   .search-button {
     display: none;
-    -webkit-app-region: no-drag;
   }
 }
 </style>

@@ -24,17 +24,7 @@
         >
         <div class="artist">
           Playlist by
-          <span
-            v-if="
-              [
-                5277771961, 5277965913, 5277969451, 5277778542, 5278068783,
-              ].includes(playlist.id)
-            "
-            style="font-weight: 600"
-            >Apple Music</span
-          >
           <a
-            v-else
             :href="`https://music.163.com/#/user/home?id=${playlist.creator.userId}`"
             target="blank"
             >{{ playlist.creator.nickname }}</a

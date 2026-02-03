@@ -77,13 +77,6 @@
           </div>
           <div
             class="tab"
-            :class="{ active: currentTab === 'mvs' }"
-            @click="updateCurrentTab('mvs')"
-          >
-            {{ $t('library.mvs') }}
-          </div>
-          <div
-            class="tab"
             :class="{ active: currentTab === 'cloudDisk' }"
             @click="updateCurrentTab('cloudDisk')"
           >
@@ -139,9 +132,6 @@
         />
       </div>
 
-      <div v-show="currentTab === 'mvs'">
-        <MvRow :mvs="liked.mvs" />
-      </div>
 
       <div v-show="currentTab === 'cloudDisk'">
         <TrackList
@@ -226,7 +216,6 @@ import ContextMenu from '@/components/ContextMenu.vue';
 import TrackList from '@/components/TrackList.vue';
 import CoverRow from '@/components/CoverRow.vue';
 import SvgIcon from '@/components/SvgIcon.vue';
-import MvRow from '@/components/MvRow.vue';
 
 /**
  * Pick the lyric part from a string formed in `[timecode] lyric`.
@@ -240,7 +229,7 @@ function extractLyricPart(rawLyric) {
 
 export default {
   name: 'Library',
-  components: { SvgIcon, CoverRow, TrackList, MvRow, ContextMenu },
+  components: { SvgIcon, CoverRow, TrackList, ContextMenu },
   data() {
     return {
       show: false,
@@ -332,7 +321,6 @@ export default {
       this.$store.dispatch('fetchLikedPlaylist');
       this.$store.dispatch('fetchLikedAlbums');
       this.$store.dispatch('fetchLikedArtists');
-      this.$store.dispatch('fetchLikedMVs');
       this.$store.dispatch('fetchCloudDisk');
       this.$store.dispatch('fetchPlayHistory');
     },

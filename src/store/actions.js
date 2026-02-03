@@ -9,7 +9,6 @@ import {
   userLikedSongsIDs,
   likedAlbums,
   likedArtists,
-  likedMVs,
   cloudDisk,
   userAccount,
 } from '@/api/user';
@@ -138,17 +137,6 @@ export default {
       if (result.data) {
         commit('updateLikedXXX', {
           name: 'artists',
-          data: result.data,
-        });
-      }
-    });
-  },
-  fetchLikedMVs: ({ commit }) => {
-    if (!isAccountLoggedIn()) return;
-    return likedMVs({ limit: 1000 }).then(result => {
-      if (result.data) {
-        commit('updateLikedXXX', {
-          name: 'mvs',
           data: result.data,
         });
       }

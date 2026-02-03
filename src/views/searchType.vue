@@ -24,9 +24,6 @@
         dbclick-track-func="playAList"
       />
     </div>
-    <div v-if="type === 'musicVideos'">
-      <MvRow :mvs="result" />
-    </div>
     <div v-if="type === 'playlists'">
       <CoverRow type="playlist" :items="result" sub-text="title" />
     </div>
@@ -47,7 +44,6 @@ import { camelCase } from 'change-case';
 import NProgress from 'nprogress';
 
 import TrackList from '@/components/TrackList.vue';
-import MvRow from '@/components/MvRow.vue';
 import CoverRow from '@/components/CoverRow.vue';
 import ButtonTwoTone from '@/components/ButtonTwoTone.vue';
 
@@ -55,7 +51,6 @@ export default {
   name: 'Search',
   components: {
     TrackList,
-    MvRow,
     CoverRow,
     ButtonTwoTone,
   },
@@ -71,7 +66,6 @@ export default {
     },
     typeNameTable() {
       return {
-        musicVideos: locale.t('search.mv'),
         tracks: locale.t('search.song'),
         albums: locale.t('search.album'),
         artists: locale.t('search.artist'),
@@ -85,7 +79,6 @@ export default {
   methods: {
     fetchData() {
       const typeTable = {
-        musicVideos: 1004,
         tracks: 1,
         albums: 10,
         artists: 100,
@@ -99,12 +92,6 @@ export default {
         result = result.result;
         this.hasMore = result.hasMore ?? true;
         switch (this.type) {
-          case 'musicVideos':
-            this.result.push(...result.mvs);
-            if (result.mvCount <= this.result.length) {
-              this.hasMore = false;
-            }
-            break;
           case 'artists':
             this.result.push(...result.artists);
             break;

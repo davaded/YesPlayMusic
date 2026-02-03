@@ -110,6 +110,8 @@ export default {
     pause: '暫停',
     mute: '靜音',
     nextUp: '播放清單',
+    translationLyric: '歌詞(譯)',
+    PronunciationLyric: '歌詞(音)',
   },
   modal: {
     close: '關閉',
@@ -164,6 +166,12 @@ export default {
       light: '淺色',
       dark: '深色',
     },
+    trayIcon: {
+      text: '工作列圖示顏色',
+      auto: '自動',
+      light: '淺色',
+      dark: '深色',
+    },
     automaticallyCacheSongs: '自動快取歌曲',
     clearSongsCache: '清除歌曲快取',
     cacheCount: '已快取 {song} 首 ({size})',
@@ -188,6 +196,12 @@ export default {
       ask: '詢問',
       exit: '退出',
       minimizeToTray: '最小化到工作列角落',
+    },
+    enableOsdlyricsSupport: {
+      title: '桌面歌詞支援',
+      desc1:
+        '只在 Linux 環境下生效。啟用後會將歌詞檔案下載至本機位置，並在開啟播放器時嘗試連帶啟動 OSDLyrics。',
+      desc2: '請在開啟之前確保您已經正確安裝了 OSDLyrics。',
     },
     unm: {
       enable: '啟用',
@@ -232,6 +246,8 @@ export default {
     minePlaylists: '我建立的歌單',
     likedPlaylists: '收藏的歌單',
     cardiacMode: '心動模式',
+    copyLyric: '複製歌詞',
+    copyLyricWithTranslation: '複製歌詞（含翻譯）',
   },
   toast: {
     savedToPlaylist: '已新增至歌單',

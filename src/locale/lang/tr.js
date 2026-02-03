@@ -108,6 +108,8 @@ export default {
     pause: 'Durdur',
     mute: 'Sesi kapat',
     nextUp: 'Sıradaki',
+    translationLyric: 'şarkı sözleri (çeviri)',
+    PronunciationLyric: 'şarkı sözleri (çeviri)',
   },
   modal: {
     close: 'Kapat',
@@ -158,6 +160,12 @@ export default {
     permissionRequired: 'Mikrofon izni gerekiyor',
     appearance: {
       text: 'Görünüş',
+      auto: 'Otomatik',
+      light: 'Aydınlık',
+      dark: 'Karanlık',
+    },
+    trayIcon: {
+      text: 'Tepsi Simgesi Rengi',
       auto: 'Otomatik',
       light: 'Aydınlık',
       dark: 'Karanlık',
@@ -228,6 +236,8 @@ export default {
     minePlaylists: 'My Playlists',
     likedPlaylists: 'Liked Playlists',
     cardiacMode: 'Cardiac Mode',
+    copyLyric: 'Copy Lyric',
+    copyLyricWithTranslation: 'Copy Lyric With Translation',
   },
   toast: {
     savedToMyLikedSongs: 'Beğendiğim Müziklere Kaydet',

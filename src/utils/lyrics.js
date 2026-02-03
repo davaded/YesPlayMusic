@@ -2,6 +2,7 @@ export function lyricParser(lrc) {
   return {
     lyric: parseLyric(lrc?.lrc?.lyric || ''),
     tlyric: parseLyric(lrc?.tlyric?.lyric || ''),
+    romalyric: parseLyric(lrc?.romalrc?.lyric || ''),
     lyricuser: lrc.lyricUser,
     transuser: lrc.transUser,
   };
@@ -63,8 +64,9 @@ function parseLyric(lrc) {
 
     for (const timestamp of lyricTimestamps.matchAll(extractTimestampRegex)) {
       const { min, sec, ms } = timestamp.groups;
-      const rawTime = timestamp[0];
-      const time = Number(min) * 60 + Number(sec) + Number(ms ?? 0) * 0.001;
+      const validMs = ms?.slice(0, 2) ?? '00';
+      const rawTime = `[${min}:${sec}.${validMs}]`;
+      const time = Number(min) * 60 + Number(sec) + Number(validMs) * 0.01;
 
       /** @type {ParsedLyric} */
       const parsedLyric = { rawTime, time, content: trimContent(content) };
@@ -82,4 +84,31 @@ function parseLyric(lrc) {
 function trimContent(content) {
   let t = content.trim();
   return t.length < 1 ? content : t;
+}
+
+/**
+ * @param {string} lyric
+ */
+export async function copyLyric(lyric) {
+  const textToCopy = lyric;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+    } catch (err) {
+      alert('复制失败，请手动复制！');
+    }
+  } else {
+    const tempInput = document.createElement('textarea');
+    tempInput.value = textToCopy;
+    tempInput.style.position = 'absolute';
+    tempInput.style.left = '-9999px';
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    try {
+      document.execCommand('copy');
+    } catch (err) {
+      alert('复制失败，请手动复制！');
+    }
+    document.body.removeChild(tempInput);
+  }
 }

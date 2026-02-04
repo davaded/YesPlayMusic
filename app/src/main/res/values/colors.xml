@@ -1,0 +1,10 @@
+<resources>
+  <color name="background">#FFFFFF</color>
+  <color name="surface">#F5F5F7</color>
+  <color name="primary">#335EEA</color>
+  <color name="primaryDark">#1F3BB5</color>
+  <color name="textPrimary">#000000</color>
+  <color name="textSecondary">#7A7A7B</color>
+  <color name="navBar">#F9F9FB</color>
+  <color name="divider">#E6E6EA</color>
+</resources>

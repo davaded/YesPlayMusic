@@ -1,0 +1,15 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <style name="Theme.YesPlayMusicCar" parent="Theme.Material3.Light.NoActionBar">
+    <item name="colorPrimary">@color/primary</item>
+    <item name="colorOnPrimary">@color/background</item>
+    <item name="colorPrimaryContainer">@color/surface</item>
+    <item name="colorOnPrimaryContainer">@color/textPrimary</item>
+    <item name="colorSurface">@color/surface</item>
+    <item name="colorOnSurface">@color/textPrimary</item>
+    <item name="android:statusBarColor">@color/background</item>
+    <item name="android:navigationBarColor">@color/background</item>
+    <item name="android:windowBackground">@color/background</item>
+    <item name="fontFamily">@font/barlow_regular</item>
+    <item name="android:fontFamily">@font/barlow_regular</item>
+  </style>
+</resources>

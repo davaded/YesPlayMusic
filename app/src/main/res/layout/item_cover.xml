@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="160dp"
+  android:layout_height="wrap_content">
+
+  <com.google.android.material.card.MaterialCardView
+    android:id="@+id/coverCard"
+    android:layout_width="160dp"
+    android:layout_height="160dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
+
+    <ImageView
+      android:id="@+id/coverImage"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:scaleType="centerCrop"
+      android:contentDescription="@string/app_name"
+      android:src="@drawable/ic_launcher_foreground" />
+  </com.google.android.material.card.MaterialCardView>
+
+  <TextView
+    android:id="@+id/coverTitle"
+    android:layout_width="160dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:textColor="@color/textPrimary"
+    android:textSize="14sp"
+    android:maxLines="2"
+    android:ellipsize="end"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/coverCard" />
+
+  <TextView
+    android:id="@+id/coverSubtitle"
+    android:layout_width="160dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="2dp"
+    android:textColor="@color/textSecondary"
+    android:textSize="12sp"
+    android:maxLines="1"
+    android:ellipsize="end"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/coverTitle" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

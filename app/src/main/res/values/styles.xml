@@ -1,0 +1,68 @@
+<resources>
+  <style name="TextAppearance.YesToolbarTitle" parent="TextAppearance.Material3.TitleLarge">
+    <item name="android:textSize">@dimen/toolbar_title_size</item>
+    <item name="android:fontFamily">@font/barlow_semibold</item>
+    <item name="android:letterSpacing">0.01</item>
+  </style>
+
+  <style name="TextAppearance.YesTab" parent="TextAppearance.Material3.TitleMedium">
+    <item name="android:textSize">@dimen/tab_text_size</item>
+    <item name="android:fontFamily">@font/barlow_semibold</item>
+    <item name="android:letterSpacing">0.02</item>
+  </style>
+
+  <style name="Widget.Yes.Card" parent="Widget.MaterialComponents.CardView">
+    <item name="cardCornerRadius">@dimen/card_radius</item>
+    <item name="cardElevation">@dimen/card_elevation</item>
+    <item name="cardBackgroundColor">@color/surface</item>
+    <item name="strokeColor">@color/cardStroke</item>
+    <item name="strokeWidth">1dp</item>
+    <item name="cardUseCompatPadding">true</item>
+  </style>
+
+  <style name="Widget.Yes.IconButton" parent="Widget.Material3.Button">
+    <item name="cornerRadius">@dimen/icon_button_radius</item>
+    <item name="backgroundTint">@color/surfaceAlt</item>
+    <item name="iconTint">@color/textPrimary</item>
+    <item name="android:minWidth">@dimen/icon_button_size</item>
+    <item name="android:minHeight">@dimen/icon_button_size</item>
+    <item name="android:insetLeft">0dp</item>
+    <item name="android:insetRight">0dp</item>
+    <item name="android:insetTop">0dp</item>
+    <item name="android:insetBottom">0dp</item>
+    <item name="android:padding">0dp</item>
+    <item name="android:textAllCaps">false</item>
+  </style>
+
+  <style name="Widget.Yes.RoundButton" parent="Widget.Material3.Button">
+    <item name="cornerRadius">@dimen/round_button_radius</item>
+    <item name="backgroundTint">@color/primary</item>
+    <item name="iconTint">@color/onPrimary</item>
+    <item name="android:minWidth">@dimen/round_button_size</item>
+    <item name="android:minHeight">@dimen/round_button_size</item>
+    <item name="android:insetLeft">0dp</item>
+    <item name="android:insetRight">0dp</item>
+    <item name="android:insetTop">0dp</item>
+    <item name="android:insetBottom">0dp</item>
+    <item name="android:padding">0dp</item>
+    <item name="android:textAllCaps">false</item>
+  </style>
+
+  <style name="Widget.Yes.Button.Outline" parent="Widget.Material3.Button.OutlinedButton">
+    <item name="cornerRadius">@dimen/button_corner_radius</item>
+    <item name="strokeColor">@color/primary</item>
+    <item name="strokeWidth">1dp</item>
+    <item name="backgroundTint">@color/surface</item>
+    <item name="android:textColor">@color/primary</item>
+    <item name="android:textAllCaps">false</item>
+    <item name="android:fontFamily">@font/barlow_semibold</item>
+  </style>
+
+  <style name="Widget.Yes.Button.Filled" parent="Widget.Material3.Button">
+    <item name="cornerRadius">@dimen/button_corner_radius</item>
+    <item name="backgroundTint">@color/primary</item>
+    <item name="android:textColor">@color/onPrimary</item>
+    <item name="android:textAllCaps">false</item>
+    <item name="android:fontFamily">@font/barlow_semibold</item>
+  </style>
+</resources>

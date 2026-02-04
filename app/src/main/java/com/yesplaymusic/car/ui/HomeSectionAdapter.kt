@@ -48,7 +48,7 @@ class HomeSectionAdapter(
       binding.sectionList.adapter = adapter
       binding.sectionList.isNestedScrollingEnabled = false
       if (binding.sectionList.itemDecorationCount == 0) {
-        val spacing = (8 * binding.root.resources.displayMetrics.density).toInt()
+        val spacing = binding.root.resources.getDimensionPixelSize(com.yesplaymusic.car.R.dimen.home_section_spacing_horizontal)
         binding.sectionList.addItemDecoration(SpacingItemDecoration(horizontal = spacing))
       }
       adapter.submit(section.items)

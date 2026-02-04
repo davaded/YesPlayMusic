@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -17,15 +18,18 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.google.common.util.concurrent.ListenableFuture
 import com.yesplaymusic.car.R
 import com.yesplaymusic.car.data.ProviderRegistry
+import com.yesplaymusic.car.data.CoverItem
+import com.yesplaymusic.car.data.MediaType
 import com.yesplaymusic.car.data.Track
 import com.yesplaymusic.car.databinding.ActivityMainBinding
 import com.yesplaymusic.car.playback.PlaybackService
 import com.yesplaymusic.car.playback.PlaybackViewModel
+import coil.load
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainActivity : AppCompatActivity(), PlaybackHost {
+class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavigator {
 
   private lateinit var binding: ActivityMainBinding
   private lateinit var viewModel: PlaybackViewModel
@@ -88,6 +92,31 @@ class MainActivity : AppCompatActivity(), PlaybackHost {
         else -> ""
       }
     }.attach()
+
+    binding.searchShortcut.setOnClickListener {
+      binding.viewPager.currentItem = 1
+    }
+
+    binding.miniPlayerBar.setOnClickListener {
+      binding.viewPager.currentItem = 2
+    }
+    binding.miniPlayButton.setOnClickListener { togglePlay() }
+    binding.miniNextButton.setOnClickListener { skipNext() }
+    binding.miniPrevButton.setOnClickListener { skipPrev() }
+
+    viewModel.currentTrack.observe(this) { track ->
+      updateMiniPlayer(track)
+    }
+    viewModel.isPlaying.observe(this) { isPlaying ->
+      binding.miniPlayButton.setIconResource(if (isPlaying) R.drawable.ic_pause_24 else R.drawable.ic_play_24)
+    }
+    viewModel.positionMs.observe(this) { updateMiniProgress() }
+    viewModel.durationMs.observe(this) { updateMiniProgress() }
+
+    supportFragmentManager.addOnBackStackChangedListener {
+      updateDetailVisibility()
+    }
+    updateDetailVisibility()
   }
 
   override fun onStart() {
@@ -190,18 +219,87 @@ class MainActivity : AppCompatActivity(), PlaybackHost {
     controller?.seekTo(positionMs)
   }
 
+  override fun openMediaDetail(type: MediaType, item: CoverItem) {
+    val fragment = MediaDetailFragment.newInstance(type, item)
+    supportFragmentManager.beginTransaction()
+      .setReorderingAllowed(true)
+      .replace(binding.detailContainer.id, fragment)
+      .addToBackStack("media_detail")
+      .commit()
+    setDetailVisible(true)
+  }
+
+  override fun openMv(mvId: Long, title: String, artist: String) {
+    if (mvId <= 0L) return
+    val fragment = MvFragment.newInstance(mvId, title, artist)
+    supportFragmentManager.beginTransaction()
+      .setReorderingAllowed(true)
+      .replace(binding.detailContainer.id, fragment)
+      .addToBackStack("mv_detail")
+      .commit()
+    setDetailVisible(true)
+  }
+
   private fun updatePlaybackState() {
     val player = controller ?: return
     val isPlaying = player.isPlaying
     viewModel.isPlaying.postValue(isPlaying)
 
     val status = when (player.playbackState) {
-      Player.STATE_IDLE -> "就绪"
-      Player.STATE_BUFFERING -> "缓冲中…"
-      Player.STATE_READY -> if (isPlaying) "播放中" else "已暂停"
-      Player.STATE_ENDED -> "播放结束"
+      Player.STATE_IDLE -> getString(R.string.status_idle)
+      Player.STATE_BUFFERING -> getString(R.string.status_buffering)
+      Player.STATE_READY -> if (isPlaying) getString(R.string.status_playing) else getString(R.string.status_paused)
+      Player.STATE_ENDED -> getString(R.string.status_ended)
       else -> ""
     }
     viewModel.statusText.postValue(status)
+  }
+
+  private fun updateDetailVisibility() {
+    setDetailVisible(supportFragmentManager.backStackEntryCount > 0)
+  }
+
+  private fun setDetailVisible(hasDetail: Boolean) {
+    binding.detailContainer.visibility = if (hasDetail) View.VISIBLE else View.GONE
+    binding.viewPager.visibility = if (hasDetail) View.GONE else View.VISIBLE
+    binding.tabLayout.visibility = if (hasDetail) View.GONE else View.VISIBLE
+    binding.topBar.visibility = if (hasDetail) View.GONE else View.VISIBLE
+  }
+
+  private fun updateMiniPlayer(track: Track?) {
+    binding.miniPlayerBar.visibility = View.VISIBLE
+    if (track == null) {
+      binding.miniTitle.text = getString(R.string.not_playing)
+      binding.miniSubtitle.text = ""
+      binding.miniCover.setImageResource(R.drawable.ic_launcher_foreground)
+      binding.miniPlayButton.isEnabled = false
+      binding.miniNextButton.isEnabled = false
+      binding.miniPrevButton.isEnabled = false
+      binding.miniProgress.progress = 0
+      return
+    }
+    binding.miniTitle.text = track.title
+    binding.miniSubtitle.text = track.artist
+    binding.miniPlayButton.isEnabled = true
+    binding.miniNextButton.isEnabled = true
+    binding.miniPrevButton.isEnabled = true
+    binding.miniCover.load(track.coverUrl) {
+      crossfade(true)
+      placeholder(R.drawable.ic_launcher_foreground)
+      error(R.drawable.ic_launcher_foreground)
+    }
+  }
+
+  private fun updateMiniProgress() {
+    val duration = viewModel.durationMs.value ?: 0L
+    val position = viewModel.positionMs.value ?: 0L
+    if (duration <= 0L) {
+      binding.miniProgress.progress = 0
+      return
+    }
+    val percent = ((position.coerceAtLeast(0L).toDouble() / duration.toDouble()) * 100.0)
+      .toInt()
+      .coerceIn(0, 100)
+    binding.miniProgress.progress = percent
   }
 }

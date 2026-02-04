@@ -1,49 +1,264 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<androidx.constraintlayout.widget.ConstraintLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:background="@color/background">
+  android:background="@drawable/bg_chassis">
 
-  <com.google.android.material.appbar.AppBarLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/background">
+  <com.google.android.material.card.MaterialCardView
+    android:id="@+id/appShell"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:layout_margin="@dimen/shell_margin"
+    app:cardCornerRadius="@dimen/shell_radius"
+    app:cardElevation="@dimen/shell_elevation"
+    app:cardBackgroundColor="@color/surface"
+    app:strokeColor="@color/cardStroke"
+    app:strokeWidth="1dp"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent">
 
-    <com.google.android.material.appbar.MaterialToolbar
-      android:id="@+id/topBar"
+    <androidx.constraintlayout.widget.ConstraintLayout
+      android:id="@+id/appContent"
       android:layout_width="match_parent"
-      android:layout_height="64dp"
-      android:background="@color/background"
-      android:paddingStart="24dp"
-      android:paddingEnd="24dp"
-      app:elevation="0dp"
-      app:title="YesPlayMusic"
-      app:titleTextColor="@color/textPrimary"
-      app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge" />
+      android:layout_height="match_parent"
+      android:background="@drawable/bg_main">
 
-    <com.google.android.material.tabs.TabLayout
-      android:id="@+id/tabLayout"
-      android:layout_width="match_parent"
-      android:layout_height="48dp"
-      android:background="@color/background"
-      android:paddingStart="12dp"
-      android:paddingEnd="12dp"
-      app:elevation="0dp"
-      app:tabIndicatorColor="@color/primary"
-      app:tabSelectedTextColor="@color/primary"
-      app:tabTextColor="@color/textSecondary"
-      app:tabTextAppearance="@style/TextAppearance.Material3.TitleMedium"
-      app:tabIndicatorHeight="3dp"
-      app:tabMode="fixed" />
+      <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topBar"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/top_bar_height"
+        android:background="@color/surface"
+        android:paddingStart="@dimen/shell_padding"
+        android:paddingEnd="@dimen/shell_padding"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-  </com.google.android.material.appbar.AppBarLayout>
+        <ImageView
+          android:id="@+id/appLogo"
+          android:layout_width="@dimen/top_bar_logo_size"
+          android:layout_height="@dimen/top_bar_logo_size"
+          android:src="@drawable/ic_launcher_foreground"
+          android:contentDescription="@string/app_name"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent" />
 
-  <androidx.viewpager2.widget.ViewPager2
-    android:id="@+id/viewPager"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        <TextView
+          android:id="@+id/appTitle"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="12dp"
+          android:text="@string/app_name"
+          android:textColor="@color/textPrimary"
+          android:textSize="@dimen/top_bar_title_size"
+          android:fontFamily="@font/barlow_semibold"
+          app:layout_constraintStart_toEndOf="@id/appLogo"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <com.google.android.material.tabs.TabLayout
+          android:id="@+id/tabLayout"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="32dp"
+          android:layout_marginEnd="32dp"
+          android:background="@color/surface"
+          app:tabIndicatorColor="@color/primary"
+          app:tabSelectedTextColor="@color/primary"
+          app:tabTextColor="@color/textSecondary"
+          app:tabTextAppearance="@style/TextAppearance.YesTab"
+          app:tabIndicatorHeight="4dp"
+          app:tabIndicatorFullWidth="false"
+          app:tabMode="fixed"
+          app:layout_constraintStart_toEndOf="@id/appTitle"
+          app:layout_constraintEnd_toStartOf="@id/searchShortcut"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent" />
+
+        <com.google.android.material.card.MaterialCardView
+          android:id="@+id/searchShortcut"
+          android:layout_width="@dimen/search_chip_width"
+          android:layout_height="@dimen/search_chip_height"
+          android:clickable="true"
+          android:focusable="true"
+          android:foreground="?attr/selectableItemBackground"
+          app:cardCornerRadius="@dimen/search_chip_radius"
+          app:cardBackgroundColor="@color/surfaceAlt"
+          app:cardElevation="0dp"
+          app:strokeColor="@color/cardStroke"
+          app:strokeWidth="1dp"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent">
+
+          <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <ImageView
+              android:layout_width="18dp"
+              android:layout_height="18dp"
+              android:src="@drawable/ic_search_24"
+              android:tint="@color/textTertiary"
+              android:contentDescription="@string/search" />
+
+            <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginStart="10dp"
+              android:text="@string/search"
+              android:textColor="@color/textTertiary"
+              android:textSize="@dimen/search_chip_text_size"
+              android:fontFamily="@font/barlow_regular" />
+          </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+      </androidx.constraintlayout.widget.ConstraintLayout>
+
+      <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
+        app:layout_constraintBottom_toTopOf="@id/miniPlayerBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+      <FrameLayout
+        android:id="@+id/detailContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/surface"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
+        app:layout_constraintBottom_toTopOf="@id/miniPlayerBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+      <com.google.android.material.card.MaterialCardView
+        android:id="@+id/miniPlayerBar"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/mini_player_height"
+        android:layout_marginStart="@dimen/shell_padding"
+        android:layout_marginEnd="@dimen/shell_padding"
+        android:layout_marginBottom="@dimen/shell_padding"
+        app:cardCornerRadius="@dimen/mini_player_radius"
+        app:cardElevation="@dimen/mini_player_elevation"
+        app:cardBackgroundColor="@color/surface"
+        app:strokeColor="@color/cardStroke"
+        app:strokeWidth="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:paddingStart="16dp"
+          android:paddingEnd="16dp">
+
+          <ImageView
+            android:id="@+id/miniCover"
+            android:layout_width="@dimen/mini_cover_size"
+            android:layout_height="@dimen/mini_cover_size"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_launcher_foreground"
+            android:contentDescription="@string/app_name"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+          <TextView
+            android:id="@+id/miniTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:textColor="@color/textPrimary"
+            android:textSize="@dimen/mini_title_size"
+            android:fontFamily="@font/barlow_semibold"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toEndOf="@id/miniCover"
+            app:layout_constraintEnd_toStartOf="@id/miniPrevButton"
+            app:layout_constraintTop_toTopOf="@id/miniCover" />
+
+          <TextView
+            android:id="@+id/miniSubtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="6dp"
+            android:textColor="@color/textSecondary"
+            android:textSize="@dimen/mini_subtitle_size"
+            android:fontFamily="@font/barlow_regular"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toEndOf="@id/miniCover"
+            app:layout_constraintEnd_toStartOf="@id/miniPrevButton"
+            app:layout_constraintTop_toBottomOf="@id/miniTitle" />
+
+          <com.google.android.material.button.MaterialButton
+            android:id="@+id/miniPrevButton"
+            style="@style/Widget.Yes.IconButton"
+            android:layout_width="@dimen/mini_button_size"
+            android:layout_height="@dimen/mini_button_size"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="@string/previous"
+            app:icon="@drawable/ic_prev_24"
+            app:layout_constraintEnd_toStartOf="@id/miniPlayButton"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+          <com.google.android.material.button.MaterialButton
+            android:id="@+id/miniPlayButton"
+            style="@style/Widget.Yes.IconButton"
+            android:layout_width="@dimen/mini_button_size"
+            android:layout_height="@dimen/mini_button_size"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="@string/play"
+            app:icon="@drawable/ic_play_24"
+            app:layout_constraintEnd_toStartOf="@id/miniNextButton"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+          <com.google.android.material.button.MaterialButton
+            android:id="@+id/miniNextButton"
+            style="@style/Widget.Yes.IconButton"
+            android:layout_width="@dimen/mini_button_size"
+            android:layout_height="@dimen/mini_button_size"
+            android:contentDescription="@string/next"
+            app:icon="@drawable/ic_next_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+          <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/miniProgress"
+            android:layout_width="0dp"
+            android:layout_height="4dp"
+            android:layout_marginTop="8dp"
+            android:indeterminate="false"
+            app:trackThickness="4dp"
+            app:trackColor="@color/divider"
+            app:indicatorColor="@color/primary"
+            app:layout_constraintStart_toStartOf="@id/miniTitle"
+            app:layout_constraintEnd_toStartOf="@id/miniPrevButton"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+      </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+  </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

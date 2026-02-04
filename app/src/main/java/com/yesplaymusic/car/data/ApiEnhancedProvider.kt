@@ -35,7 +35,8 @@ class ApiEnhancedProvider(
             artist = song.arr("ar")?.firstOrNull()?.asJsonObject?.str("name") ?: "",
             album = song.obj("al")?.str("name"),
             coverUrl = song.obj("al")?.str("picUrl"),
-            durationMs = song.long("dt") ?: 0L
+            durationMs = song.long("dt") ?: 0L,
+            mvId = song.long("mv") ?: song.long("mvid") ?: 0L
           )
         }
       }
@@ -59,27 +60,111 @@ class ApiEnhancedProvider(
   }
 
   override suspend fun getPlaylist(playlistId: Long): List<Track> {
+    return getPlaylistDetail(playlistId)?.tracks.orEmpty()
+  }
+
+  override suspend fun getPlaylistDetail(playlistId: Long): MediaDetail? {
     return withContext(Dispatchers.IO) {
       val url = "$baseUrl/playlist/detail?id=$playlistId"
+      val response = client.newCall(Request.Builder().url(url).build()).execute()
+      response.use { resp ->
+        if (!resp.isSuccessful) return@withContext null
+        val body = resp.body?.string() ?: return@withContext null
+        val root = JsonParser.parseString(body).asJsonObject
+        val playlist = root.obj("playlist") ?: return@withContext null
+        val tracks = playlist.arr("tracks")?.mapNotNull { item ->
+          parseTrack(item.asJsonObject)
+        } ?: emptyList()
+        MediaDetail(
+          id = playlistId,
+          title = playlist.str("name") ?: "",
+          subtitle = playlist.obj("creator")?.str("nickname"),
+          coverUrl = playlist.str("coverImgUrl"),
+          tracks = tracks
+        )
+      }
+    }
+  }
+
+  override suspend fun getAlbumDetail(albumId: Long): MediaDetail? {
+    return withContext(Dispatchers.IO) {
+      val url = "$baseUrl/album?id=$albumId"
+      val response = client.newCall(Request.Builder().url(url).build()).execute()
+      response.use { resp ->
+        if (!resp.isSuccessful) return@withContext null
+        val body = resp.body?.string() ?: return@withContext null
+        val root = JsonParser.parseString(body).asJsonObject
+        val album = root.obj("album") ?: return@withContext null
+        val tracks = root.arr("songs")?.mapNotNull { item ->
+          parseTrack(item.asJsonObject, album)
+        } ?: emptyList()
+        val artist = album.obj("artist")?.str("name")
+          ?: album.arr("artists")?.firstOrNull()?.asJsonObject?.str("name")
+        MediaDetail(
+          id = albumId,
+          title = album.str("name") ?: "",
+          subtitle = artist,
+          coverUrl = album.str("picUrl"),
+          tracks = tracks
+        )
+      }
+    }
+  }
+
+  override suspend fun getLyrics(trackId: Long): List<LyricLine> {
+    return withContext(Dispatchers.IO) {
+      val url = "$baseUrl/lyric?id=$trackId"
       val response = client.newCall(Request.Builder().url(url).build()).execute()
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext emptyList()
         val body = resp.body?.string() ?: return@withContext emptyList()
         val root = JsonParser.parseString(body).asJsonObject
-        val tracks = root.obj("playlist")?.arr("tracks") ?: return@withContext emptyList()
-        tracks.mapNotNull { item ->
-          val track = item.asJsonObject
-          val id = track.long("id")
-          if (id == null) return@mapNotNull null
-          Track(
-            id = id,
-            title = track.str("name") ?: "",
-            artist = track.arr("ar")?.firstOrNull()?.asJsonObject?.str("name") ?: "",
-            album = track.obj("al")?.str("name"),
-            coverUrl = track.obj("al")?.str("picUrl"),
-            durationMs = track.long("dt") ?: 0L
-          )
-        }
+        val lyric = root.obj("lrc")?.str("lyric")
+          ?: root.obj("yrc")?.str("lyric")
+          ?: root.obj("tlyric")?.str("lyric")
+        LyricsParser.parse(lyric)
+      }
+    }
+  }
+
+  override suspend fun getSongDetail(trackId: Long): SongDetail? {
+    return withContext(Dispatchers.IO) {
+      val url = "$baseUrl/song/detail?ids=$trackId"
+      val response = client.newCall(Request.Builder().url(url).build()).execute()
+      response.use { resp ->
+        if (!resp.isSuccessful) return@withContext null
+        val body = resp.body?.string() ?: return@withContext null
+        val root = JsonParser.parseString(body).asJsonObject
+        val song = root.arr("songs")?.firstOrNull()?.asJsonObject ?: return@withContext null
+        val albumObj = song.obj("al")
+        val artistNames = song.arr("ar")
+          ?.mapNotNull { it.asJsonObject?.str("name") }
+          ?.joinToString(" / ")
+          ?: ""
+        SongDetail(
+          id = song.long("id") ?: trackId,
+          title = song.str("name") ?: "",
+          artist = artistNames,
+          album = albumObj?.str("name"),
+          albumId = albumObj?.long("id"),
+          durationMs = song.long("dt") ?: 0L,
+          mvId = song.long("mv") ?: song.long("mvid") ?: 0L,
+          publishTime = albumObj?.long("publishTime")
+        )
+      }
+    }
+  }
+
+  override suspend fun getMvUrl(mvId: Long): String {
+    if (mvId <= 0L) return ""
+    return withContext(Dispatchers.IO) {
+      val url = "$baseUrl/mv/url?id=$mvId"
+      val response = client.newCall(Request.Builder().url(url).build()).execute()
+      response.use { resp ->
+        if (!resp.isSuccessful) return@withContext ""
+        val body = resp.body?.string() ?: return@withContext ""
+        val root = JsonParser.parseString(body).asJsonObject
+        root.obj("data")?.str("url") ?: ""
       }
     }
   }
@@ -159,7 +244,7 @@ class ApiEnhancedProvider(
   }
 
   companion object {
-    const val DEFAULT_BASE_URL = "https://api-enhanced-sable.vercel.app"
+    const val DEFAULT_BASE_URL = "https://daidaiyuplay.daidaiyu.me"
   }
 }
 
@@ -177,3 +262,21 @@ private fun JsonObject.long(name: String): Long? =
 
 private fun JsonElement?.firstOrNull(): JsonElement? =
   if (this != null && this.isJsonArray && this.asJsonArray.size() > 0) this.asJsonArray[0] else null
+
+private fun parseTrack(track: JsonObject, fallbackAlbum: JsonObject? = null): Track? {
+  val id = track.long("id") ?: return null
+  val albumObj = track.obj("al") ?: track.obj("album") ?: fallbackAlbum
+  val artist = track.arr("ar")?.firstOrNull()?.asJsonObject?.str("name")
+    ?: track.obj("artist")?.str("name")
+    ?: albumObj?.obj("artist")?.str("name")
+    ?: ""
+  return Track(
+    id = id,
+    title = track.str("name") ?: "",
+    artist = artist,
+    album = albumObj?.str("name"),
+    coverUrl = albumObj?.str("picUrl"),
+    durationMs = track.long("dt") ?: track.long("duration") ?: 0L,
+    mvId = track.long("mv") ?: track.long("mvid") ?: 0L
+  )
+}

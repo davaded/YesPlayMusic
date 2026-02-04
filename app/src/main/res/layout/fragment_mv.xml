@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  android:background="@color/surface">
+
+  <com.google.android.material.appbar.MaterialToolbar
+    android:id="@+id/mvToolbar"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/detail_toolbar_height"
+    android:background="@color/navBar"
+    android:paddingStart="@dimen/screen_padding"
+    android:paddingEnd="@dimen/screen_padding"
+    app:navigationIcon="@drawable/ic_arrow_back_24"
+    app:navigationIconTint="@color/textPrimary"
+    app:titleTextAppearance="@style/TextAppearance.YesToolbarTitle"
+    app:titleTextColor="@color/textPrimary" />
+
+  <FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1">
+
+    <androidx.media3.ui.PlayerView
+      android:id="@+id/mvPlayerView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:keepScreenOn="true"
+      app:use_controller="true" />
+
+    <TextView
+      android:id="@+id/mvStatus"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:gravity="center"
+      android:textColor="@color/textTertiary"
+      android:textSize="@dimen/detail_status_size"
+      android:fontFamily="@font/barlow_regular"
+      android:text="@string/detail_loading" />
+
+  </FrameLayout>
+
+</LinearLayout>

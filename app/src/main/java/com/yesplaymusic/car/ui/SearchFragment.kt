@@ -43,7 +43,7 @@ class SearchFragment : Fragment() {
     binding.resultsList.layoutManager = LinearLayoutManager(requireContext())
     binding.resultsList.adapter = adapter
     if (binding.resultsList.itemDecorationCount == 0) {
-      val spacing = (6 * resources.displayMetrics.density).toInt()
+      val spacing = resources.getDimensionPixelSize(R.dimen.list_item_spacing)
       binding.resultsList.addItemDecoration(SpacingItemDecoration(vertical = spacing))
     }
 
@@ -61,13 +61,19 @@ class SearchFragment : Fragment() {
   private fun performSearch(adapter: SearchResultAdapter) {
     val keyword = binding.searchInput.text?.toString()?.trim().orEmpty()
     if (keyword.isBlank()) return
+    binding.searchStatus.visibility = View.VISIBLE
     binding.searchStatus.text = getString(R.string.searching)
     lifecycleScope.launch {
       val list = withContext(Dispatchers.IO) { provider.search(keyword, limit = 20) }
       results.clear()
       results.addAll(list)
       adapter.submit(list)
-      binding.searchStatus.text = if (list.isEmpty()) getString(R.string.no_results) else ""
+      if (list.isEmpty()) {
+        binding.searchStatus.visibility = View.VISIBLE
+        binding.searchStatus.text = getString(R.string.no_results)
+      } else {
+        binding.searchStatus.visibility = View.GONE
+      }
     }
   }
 

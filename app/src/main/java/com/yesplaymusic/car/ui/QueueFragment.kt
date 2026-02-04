@@ -31,12 +31,13 @@ class QueueFragment : Fragment() {
     binding.queueList.layoutManager = LinearLayoutManager(requireContext())
     binding.queueList.adapter = adapter
     if (binding.queueList.itemDecorationCount == 0) {
-      val spacing = (6 * resources.displayMetrics.density).toInt()
+      val spacing = resources.getDimensionPixelSize(com.yesplaymusic.car.R.dimen.list_item_spacing)
       binding.queueList.addItemDecoration(SpacingItemDecoration(vertical = spacing))
     }
 
     viewModel.queue.observe(viewLifecycleOwner) { queue ->
       adapter.submit(queue, viewModel.queueIndex.value ?: -1)
+      binding.queueEmpty.visibility = if (queue.isEmpty()) View.VISIBLE else View.GONE
     }
 
     viewModel.queueIndex.observe(viewLifecycleOwner) { index ->

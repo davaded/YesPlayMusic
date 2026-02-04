@@ -1,10 +1,18 @@
 <resources>
-  <color name="background">#FFFFFF</color>
-  <color name="surface">#F5F5F7</color>
-  <color name="primary">#335EEA</color>
-  <color name="primaryDark">#1F3BB5</color>
-  <color name="textPrimary">#000000</color>
-  <color name="textSecondary">#7A7A7B</color>
-  <color name="navBar">#F9F9FB</color>
-  <color name="divider">#E6E6EA</color>
+  <color name="background">#0B1023</color>
+  <color name="surface">#FFFFFF</color>
+  <color name="surfaceAlt">#F5F7FB</color>
+  <color name="primary">#2F6BFF</color>
+  <color name="primaryDark">#1E4BD0</color>
+  <color name="onPrimary">#FFFFFF</color>
+  <color name="textPrimary">#0E111A</color>
+  <color name="textSecondary">#5B5E6A</color>
+  <color name="textTertiary">#8A8F9C</color>
+  <color name="navBar">#FFFFFF</color>
+  <color name="divider">#E3E7EF</color>
+  <color name="cardStroke">#E2E6EE</color>
+  <color name="ripple">#1A2F6BFF</color>
+  <color name="heroCard">#EAF0FF</color>
+  <color name="heroText">#2B3C69</color>
+  <color name="chipBackground">#F1F4FA</color>
 </resources>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  android:background="@color/surface">
+
+  <com.google.android.material.appbar.MaterialToolbar
+    android:id="@+id/detailToolbar"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/detail_toolbar_height"
+    android:background="@color/navBar"
+    android:paddingStart="@dimen/screen_padding"
+    android:paddingEnd="@dimen/screen_padding"
+    app:navigationIcon="@drawable/ic_arrow_back_24"
+    app:navigationIconTint="@color/textPrimary"
+    app:titleTextAppearance="@style/TextAppearance.YesToolbarTitle"
+    app:titleTextColor="@color/textPrimary" />
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/detailHeader"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/screen_padding"
+    android:paddingEnd="@dimen/screen_padding"
+    android:paddingTop="24dp"
+    android:paddingBottom="16dp">
+
+    <com.google.android.material.card.MaterialCardView
+      android:id="@+id/detailCoverCard"
+      android:layout_width="@dimen/detail_cover_size"
+      android:layout_height="@dimen/detail_cover_size"
+      app:cardCornerRadius="@dimen/cover_radius"
+      app:cardElevation="@dimen/card_elevation"
+      app:cardBackgroundColor="@color/surface"
+      app:strokeColor="@color/divider"
+      app:strokeWidth="1dp"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent">
+
+      <ImageView
+        android:id="@+id/detailCover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_launcher_foreground" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+      android:id="@+id/detailTitle"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="20dp"
+      android:textColor="@color/textPrimary"
+      android:textSize="@dimen/detail_title_size"
+      android:fontFamily="@font/barlow_semibold"
+      android:maxLines="2"
+      android:ellipsize="end"
+      app:layout_constraintStart_toEndOf="@id/detailCoverCard"
+      app:layout_constraintTop_toTopOf="@id/detailCoverCard"
+      app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+      android:id="@+id/detailSubtitle"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="20dp"
+      android:layout_marginTop="8dp"
+      android:textColor="@color/textSecondary"
+      android:textSize="@dimen/detail_subtitle_size"
+      android:fontFamily="@font/barlow_regular"
+      android:maxLines="1"
+      android:ellipsize="end"
+      app:layout_constraintStart_toEndOf="@id/detailCoverCard"
+      app:layout_constraintTop_toBottomOf="@id/detailTitle"
+      app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/playAllButton"
+      android:layout_width="wrap_content"
+      android:layout_height="48dp"
+      android:layout_marginStart="20dp"
+      android:layout_marginTop="16dp"
+      android:text="@string/play_all"
+      style="@style/Widget.Yes.Button.Filled"
+      app:layout_constraintStart_toEndOf="@id/detailCoverCard"
+      app:layout_constraintTop_toBottomOf="@id/detailSubtitle" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/detailActions"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/screen_padding"
+    android:paddingEnd="@dimen/screen_padding"
+    android:paddingBottom="8dp">
+
+    <com.google.android.material.card.MaterialCardView
+      android:id="@+id/detailSearchCard"
+      android:layout_width="0dp"
+      android:layout_height="@dimen/search_height"
+      style="@style/Widget.Yes.Card"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintEnd_toStartOf="@id/detailSortButton">
+
+      <EditText
+        android:id="@+id/detailSearchInput"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:hint="@string/detail_search_hint"
+        android:paddingStart="@dimen/search_input_padding"
+        android:paddingEnd="@dimen/search_input_padding"
+        android:textColor="@color/textPrimary"
+        android:textColorHint="@color/textTertiary"
+        android:textSize="@dimen/track_title_size"
+        android:fontFamily="@font/barlow_regular"
+        android:imeOptions="actionSearch"
+        android:inputType="text" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/detailSortButton"
+      android:layout_width="@dimen/search_button_width"
+      android:layout_height="@dimen/search_height"
+      android:layout_marginStart="16dp"
+      android:text="@string/sort_default"
+      style="@style/Widget.Yes.Button.Outline"
+      app:layout_constraintTop_toTopOf="@id/detailSearchCard"
+      app:layout_constraintBottom_toBottomOf="@id/detailSearchCard"
+      app:layout_constraintEnd_toEndOf="parent" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+  <TextView
+    android:id="@+id/detailStatus"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/screen_padding"
+    android:paddingEnd="@dimen/screen_padding"
+    android:paddingTop="12dp"
+    android:paddingBottom="12dp"
+    android:textColor="@color/textTertiary"
+    android:textSize="@dimen/detail_status_size"
+    android:fontFamily="@font/barlow_regular"
+    android:visibility="gone" />
+
+  <androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/detailList"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    android:paddingStart="@dimen/screen_padding"
+    android:paddingEnd="@dimen/screen_padding"
+    android:clipToPadding="false"
+    android:overScrollMode="never"
+    android:paddingBottom="24dp" />
+
+</LinearLayout>

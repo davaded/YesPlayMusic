@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="@dimen/quick_item_height"
+  android:padding="6dp"
+  android:clickable="true"
+  android:focusable="true"
+  android:foreground="?attr/selectableItemBackground">
+
+  <ImageView
+    android:id="@+id/quickCover"
+    android:layout_width="@dimen/quick_item_cover"
+    android:layout_height="@dimen/quick_item_cover"
+    android:scaleType="centerCrop"
+    android:src="@drawable/ic_launcher_foreground"
+    android:contentDescription="@string/app_name"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent" />
+
+  <TextView
+    android:id="@+id/quickTitle"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="12dp"
+    android:textColor="@color/textPrimary"
+    android:textSize="@dimen/track_title_size"
+    android:fontFamily="@font/barlow_semibold"
+    android:maxLines="1"
+    android:ellipsize="end"
+    app:layout_constraintStart_toEndOf="@id/quickCover"
+    app:layout_constraintTop_toTopOf="@id/quickCover"
+    app:layout_constraintEnd_toEndOf="parent" />
+
+  <TextView
+    android:id="@+id/quickSubtitle"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="12dp"
+    android:layout_marginTop="4dp"
+    android:textColor="@color/textSecondary"
+    android:textSize="@dimen/track_subtitle_size"
+    android:fontFamily="@font/barlow_regular"
+    android:maxLines="1"
+    android:ellipsize="end"
+    app:layout_constraintStart_toEndOf="@id/quickCover"
+    app:layout_constraintTop_toBottomOf="@id/quickTitle"
+    app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

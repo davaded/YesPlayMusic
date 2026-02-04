@@ -40,7 +40,7 @@ class QueueAdapter(
 
     fun bind(track: Track, isCurrent: Boolean, index: Int) {
       binding.trackTitle.text = track.title
-      binding.trackSubtitle.text = if (track.album.isNullOrBlank()) track.artist else "${track.artist} · ${track.album}"
+      binding.trackSubtitle.text = if (track.album.isNullOrBlank()) track.artist else "${track.artist} - ${track.album}"
       binding.cover.load(track.coverUrl) {
         crossfade(true)
         placeholder(com.yesplaymusic.car.R.drawable.ic_launcher_foreground)

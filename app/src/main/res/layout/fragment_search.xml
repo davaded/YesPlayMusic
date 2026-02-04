@@ -4,15 +4,14 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:background="@color/background"
-  android:padding="24dp">
+  android:background="@color/surface"
+  android:padding="@dimen/screen_padding">
 
   <com.google.android.material.card.MaterialCardView
     android:id="@+id/searchContainer"
     android:layout_width="0dp"
-    android:layout_height="48dp"
-    app:cardBackgroundColor="@color/surface"
-    app:cardCornerRadius="12dp"
+    android:layout_height="@dimen/search_height"
+    style="@style/Widget.Yes.Card"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintEnd_toStartOf="@id/searchButton">
@@ -23,20 +22,23 @@
       android:layout_height="match_parent"
       android:background="@android:color/transparent"
       android:hint="@string/search_hint"
-      android:paddingStart="16dp"
-      android:paddingEnd="16dp"
+      android:paddingStart="@dimen/search_input_padding"
+      android:paddingEnd="@dimen/search_input_padding"
       android:textColor="@color/textPrimary"
-      android:textColorHint="@color/textSecondary"
+      android:textColorHint="@color/textTertiary"
+      android:textSize="@dimen/track_title_size"
+      android:fontFamily="@font/barlow_regular"
       android:imeOptions="actionSearch"
       android:inputType="text" />
   </com.google.android.material.card.MaterialCardView>
 
   <com.google.android.material.button.MaterialButton
     android:id="@+id/searchButton"
-    android:layout_width="96dp"
-    android:layout_height="48dp"
-    android:layout_marginStart="12dp"
+    android:layout_width="@dimen/search_button_width"
+    android:layout_height="@dimen/search_height"
+    android:layout_marginStart="16dp"
     android:text="@string/search"
+    style="@style/Widget.Yes.Button.Filled"
     app:layout_constraintTop_toTopOf="@id/searchContainer"
     app:layout_constraintBottom_toBottomOf="@id/searchContainer"
     app:layout_constraintEnd_toEndOf="parent" />
@@ -45,9 +47,11 @@
     android:id="@+id/searchStatus"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_marginTop="12dp"
-    android:textColor="@color/textSecondary"
-    android:textSize="14sp"
+    android:layout_marginTop="@dimen/search_status_margin_top"
+    android:textColor="@color/textTertiary"
+    android:textSize="@dimen/search_status_size"
+    android:fontFamily="@font/barlow_regular"
+    android:visibility="gone"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@id/searchContainer"
     app:layout_constraintEnd_toEndOf="parent" />
@@ -56,7 +60,9 @@
     android:id="@+id/resultsList"
     android:layout_width="0dp"
     android:layout_height="0dp"
-    android:layout_marginTop="12dp"
+    android:layout_marginTop="16dp"
+    android:clipToPadding="false"
+    android:overScrollMode="never"
     app:layout_constraintTop_toBottomOf="@id/searchStatus"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"

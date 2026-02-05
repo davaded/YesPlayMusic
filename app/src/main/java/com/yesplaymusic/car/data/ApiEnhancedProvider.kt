@@ -82,7 +82,7 @@ class ApiEnhancedProvider(
   override suspend fun resolveStream(trackId: Long): StreamResource {
     return withContext(Dispatchers.IO) {
       val url = "$baseUrl/song/url?id=$trackId&br=320000"
-      val response = client.newCall(Request.Builder().url(url).build()).execute()
+      val response = client.newCall(buildRequest(url)).execute()
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext StreamResource(url = "")
         val body = resp.body?.string() ?: return@withContext StreamResource(url = "")

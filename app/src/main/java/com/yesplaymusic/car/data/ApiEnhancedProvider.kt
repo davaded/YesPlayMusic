@@ -9,10 +9,15 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import java.util.concurrent.TimeUnit
 
 class ApiEnhancedProvider(
   private val baseUrl: String = DEFAULT_BASE_URL,
-  private val client: OkHttpClient = OkHttpClient()
+  private val client: OkHttpClient = OkHttpClient.Builder()
+    .connectTimeout(30, TimeUnit.SECONDS)
+    .readTimeout(60, TimeUnit.SECONDS)
+    .writeTimeout(30, TimeUnit.SECONDS)
+    .build()
 ) : MusicProvider {
 
   private var cookie: String? = null

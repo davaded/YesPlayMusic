@@ -114,6 +114,9 @@ class HomeFragment : Fragment() {
     val userInfo = cookieStore.getCachedUserInfo()
     val isLoggedIn = userInfo != null
 
+    // 显示 loading
+    binding.loadingIndicator.visibility = View.VISIBLE
+
     lifecycleScope.launch {
       if (isLoggedIn && userInfo != null) {
         // 已登录：使用个性化推荐
@@ -147,6 +150,9 @@ class HomeFragment : Fragment() {
           // 跳过第一个（我喜欢的音乐），显示其他歌单
           libraryItems.addAll(userPlaylists.drop(1).take(10))
           libraryAdapter.submit(libraryItems)
+
+          // 隐藏 loading
+          binding.loadingIndicator.visibility = View.GONE
         }
       } else {
         // 未登录：使用公开推荐
@@ -184,6 +190,9 @@ class HomeFragment : Fragment() {
             heroItem = null
           }
           bindHero(isDaily = false, trackCount = 0)
+
+          // 隐藏 loading
+          binding.loadingIndicator.visibility = View.GONE
         }
       }
     }

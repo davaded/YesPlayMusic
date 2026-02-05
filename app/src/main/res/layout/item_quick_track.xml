@@ -3,50 +3,62 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
-  android:layout_height="@dimen/quick_item_height"
-  android:padding="6dp"
+  android:layout_height="@dimen/song_item_height"
+  android:padding="@dimen/song_item_padding"
+  android:background="@drawable/bg_song_item_hover"
   android:clickable="true"
-  android:focusable="true"
-  android:foreground="?attr/selectableItemBackground">
+  android:focusable="true">
 
-  <ImageView
-    android:id="@+id/quickCover"
-    android:layout_width="@dimen/quick_item_cover"
-    android:layout_height="@dimen/quick_item_cover"
-    android:scaleType="centerCrop"
-    android:src="@drawable/ic_launcher_foreground"
-    android:contentDescription="@string/app_name"
+  <com.google.android.material.card.MaterialCardView
+    android:id="@+id/quickCoverCard"
+    android:layout_width="@dimen/song_item_cover_size"
+    android:layout_height="@dimen/song_item_cover_size"
+    app:cardCornerRadius="@dimen/song_item_cover_radius"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@color/surfaceAlt"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent" />
+    app:layout_constraintBottom_toBottomOf="parent">
+
+    <ImageView
+      android:id="@+id/quickCover"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:scaleType="centerCrop"
+      android:src="@drawable/ic_launcher_foreground"
+      android:contentDescription="@string/app_name" />
+  </com.google.android.material.card.MaterialCardView>
 
   <TextView
     android:id="@+id/quickTitle"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_marginStart="12dp"
+    android:layout_marginStart="16dp"
     android:textColor="@color/textPrimary"
-    android:textSize="@dimen/track_title_size"
+    android:textSize="@dimen/song_item_title_size"
     android:fontFamily="@font/barlow_semibold"
     android:maxLines="1"
     android:ellipsize="end"
-    app:layout_constraintStart_toEndOf="@id/quickCover"
-    app:layout_constraintTop_toTopOf="@id/quickCover"
-    app:layout_constraintEnd_toEndOf="parent" />
+    app:layout_constraintStart_toEndOf="@id/quickCoverCard"
+    app:layout_constraintTop_toTopOf="@id/quickCoverCard"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintBottom_toTopOf="@id/quickSubtitle"
+    app:layout_constraintVertical_chainStyle="packed" />
 
   <TextView
     android:id="@+id/quickSubtitle"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_marginStart="12dp"
+    android:layout_marginStart="16dp"
     android:layout_marginTop="4dp"
     android:textColor="@color/textSecondary"
-    android:textSize="@dimen/track_subtitle_size"
+    android:textSize="@dimen/song_item_subtitle_size"
     android:fontFamily="@font/barlow_regular"
     android:maxLines="1"
     android:ellipsize="end"
-    app:layout_constraintStart_toEndOf="@id/quickCover"
+    app:layout_constraintStart_toEndOf="@id/quickCoverCard"
     app:layout_constraintTop_toBottomOf="@id/quickTitle"
-    app:layout_constraintEnd_toEndOf="parent" />
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintBottom_toBottomOf="@id/quickCoverCard" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

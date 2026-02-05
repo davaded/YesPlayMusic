@@ -1,7 +1,7 @@
 ﻿package com.yesplaymusic.car.data
 
 object LyricsParser {
-  private val timeRegex = Regex("\\[(\\d+):(\\d+)(?:\\.(\\d{1,3}))?]\\")
+  private val timeRegex = Regex("\\[(\\d+):(\\d+)(?:\\.(\\d{1,3}))?]")
 
   fun parse(lrc: String?): List<LyricLine> {
     if (lrc.isNullOrBlank()) return emptyList()

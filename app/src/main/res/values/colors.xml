@@ -1,18 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <color name="background">#0B1023</color>
-  <color name="surface">#FFFFFF</color>
-  <color name="surfaceAlt">#F5F7FB</color>
-  <color name="primary">#2F6BFF</color>
-  <color name="primaryDark">#1E4BD0</color>
+  <!-- ========== 高对比度配色 - 特斯拉/蔚来风格 ========== -->
+
+  <!-- 背景色 -->
+  <color name="background">#000000</color>
+  <color name="surface">#0A0A0A</color>
+  <color name="surfaceAlt">#141414</color>
+  <color name="surfaceElevated">#1A1A1A</color>
+
+  <!-- 主色调 -->
+  <color name="primary">#3B82F6</color>
+  <color name="primaryDark">#2563EB</color>
   <color name="onPrimary">#FFFFFF</color>
-  <color name="textPrimary">#0E111A</color>
-  <color name="textSecondary">#5B5E6A</color>
-  <color name="textTertiary">#8A8F9C</color>
-  <color name="navBar">#FFFFFF</color>
-  <color name="divider">#E3E7EF</color>
-  <color name="cardStroke">#E2E6EE</color>
-  <color name="ripple">#1A2F6BFF</color>
-  <color name="heroCard">#EAF0FF</color>
-  <color name="heroText">#2B3C69</color>
-  <color name="chipBackground">#F1F4FA</color>
+
+  <!-- 文字颜色 - 高对比度层级 -->
+  <color name="textPrimary">#FFFFFF</color>
+  <color name="textSecondary">#9CA3AF</color>
+  <color name="textTertiary">#6B7280</color>
+  <color name="textMuted">#4B5563</color>
+
+  <!-- 导航和分割线 -->
+  <color name="navBar">#0A0A0A</color>
+  <color name="divider">#1F1F1F</color>
+  <color name="cardStroke">#262626</color>
+  <color name="borderLight">#333333</color>
+
+  <!-- 交互色 -->
+  <color name="ripple">#1A3B82F6</color>
+  <color name="hoverBackground">#1A1A1A</color>
+
+  <!-- Hero 卡片 - 渐变蓝 -->
+  <color name="heroCard">#0F172A</color>
+  <color name="heroGradientStart">#1E3A5F</color>
+  <color name="heroGradientEnd">#0F172A</color>
+  <color name="heroTitleColor">#60A5FA</color>
+  <color name="heroSubtitleColor">#93C5FD</color>
+  <color name="heroLyricColor">#64748B</color>
+  <color name="heroText">#94A3B8</color>
+
+  <!-- 芯片/标签 -->
+  <color name="chipBackground">#1F2937</color>
+
+  <!-- Tab 颜色 -->
+  <color name="tabActiveColor">#3B82F6</color>
+  <color name="tabInactiveColor">#6B7280</color>
+
+  <!-- 正在播放高亮 -->
+  <color name="nowPlaying">#22C55E</color>
+  <color name="nowPlayingBg">#14532D</color>
 </resources>

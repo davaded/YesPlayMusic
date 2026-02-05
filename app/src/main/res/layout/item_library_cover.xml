@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
-  android:layout_width="@dimen/library_cover_size"
+  android:layout_width="wrap_content"
   android:layout_height="wrap_content"
   android:clickable="true"
   android:focusable="true"
@@ -17,7 +17,8 @@
     app:cardBackgroundColor="@color/surfaceAlt"
     app:strokeColor="@color/cardStroke"
     app:strokeWidth="1dp"
-    app:cardUseCompatPadding="true">
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
 
     <ImageView
       android:id="@+id/libraryCover"
@@ -32,7 +33,7 @@
     android:id="@+id/libraryTitle"
     android:layout_width="@dimen/library_cover_size"
     android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
+    android:layout_marginTop="@dimen/cover_title_margin_top"
     android:textColor="@color/textPrimary"
     android:textSize="@dimen/library_title_size"
     android:fontFamily="@font/barlow_semibold"
@@ -45,7 +46,7 @@
     android:id="@+id/librarySubtitle"
     android:layout_width="@dimen/library_cover_size"
     android:layout_height="wrap_content"
-    android:layout_marginTop="4dp"
+    android:layout_marginTop="@dimen/cover_subtitle_margin_top"
     android:textColor="@color/textSecondary"
     android:textSize="@dimen/library_subtitle_size"
     android:fontFamily="@font/barlow_regular"

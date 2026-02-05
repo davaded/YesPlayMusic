@@ -17,6 +17,7 @@ import androidx.media3.session.SessionToken
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.common.util.concurrent.ListenableFuture
 import com.yesplaymusic.car.R
+import com.yesplaymusic.car.data.CookieStore
 import com.yesplaymusic.car.data.ProviderRegistry
 import com.yesplaymusic.car.data.CoverItem
 import com.yesplaymusic.car.data.MediaType
@@ -29,10 +30,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavigator {
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavigator, LoginFragment.LoginCallback {
 
   private lateinit var binding: ActivityMainBinding
   private lateinit var viewModel: PlaybackViewModel
+  private lateinit var cookieStore: CookieStore
 
   private var controller: MediaController? = null
   private var controllerFuture: ListenableFuture<MediaController>? = null
@@ -79,6 +82,10 @@ class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavig
     setContentView(binding.root)
 
     viewModel = ViewModelProvider(this)[PlaybackViewModel::class.java]
+    cookieStore = CookieStore.getInstance(this)
+
+    // 初始化 cookie (如果已登录)
+    initializeCookie()
 
     val pagerAdapter = MainPagerAdapter(this)
     binding.viewPager.adapter = pagerAdapter
@@ -117,6 +124,53 @@ class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavig
       updateDetailVisibility()
     }
     updateDetailVisibility()
+  }
+
+  private fun initializeCookie() {
+    val savedCookie = cookieStore.getCookie()
+    if (!savedCookie.isNullOrBlank()) {
+      provider.setCookie(savedCookie)
+    }
+  }
+
+  fun showLoginScreen() {
+    binding.viewPager.visibility = View.GONE
+    binding.tabLayout.visibility = View.GONE
+    binding.topBar.visibility = View.GONE
+    binding.miniPlayerBar.visibility = View.GONE
+
+    supportFragmentManager.beginTransaction()
+      .replace(binding.detailContainer.id, LoginFragment())
+      .addToBackStack("login")
+      .commit()
+    binding.detailContainer.visibility = View.VISIBLE
+  }
+
+  private fun showMainContent() {
+    binding.detailContainer.visibility = View.GONE
+    binding.viewPager.visibility = View.VISIBLE
+    binding.tabLayout.visibility = View.VISIBLE
+    binding.topBar.visibility = View.VISIBLE
+    binding.miniPlayerBar.visibility = View.VISIBLE
+  }
+
+  override fun onLoginSuccess() {
+    android.util.Log.i("MainActivity", "登录成功回调 -> 关闭登录页并刷新首页")
+    supportFragmentManager.popBackStack()
+    showMainContent()
+    // 通知首页刷新用户信息
+    refreshHomeFragment()
+  }
+
+  private fun refreshHomeFragment() {
+    // ViewPager2 + FragmentStateAdapter 使用 "f" + position 作为 tag
+    val homeFragment = supportFragmentManager.findFragmentByTag("f0") as? HomeFragment
+    homeFragment?.refreshUserInfo()
+  }
+
+  override fun onLoginSkipped() {
+    supportFragmentManager.popBackStack()
+    showMainContent()
   }
 
   override fun onStart() {

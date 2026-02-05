@@ -12,4 +12,35 @@ interface MusicProvider {
   suspend fun getRecommendPlaylists(limit: Int = 10): List<CoverItem> = emptyList()
   suspend fun getNewAlbums(limit: Int = 10): List<CoverItem> = emptyList()
   suspend fun getPersonalizedNewSongs(limit: Int = 8): List<CoverItem> = emptyList()
+
+  // ========== 登录相关接口 ==========
+
+  /** 获取二维码 key */
+  suspend fun getQrKey(): String? = null
+
+  /** 生成二维码图片 (返回 base64) */
+  suspend fun createQrCode(key: String): String? = null
+
+  /** 检查二维码扫码状态 */
+  suspend fun checkQrStatus(key: String): QrCheckResult = QrCheckResult(QrStatus.EXPIRED)
+
+  /** 获取登录状态 */
+  suspend fun getLoginStatus(): LoginStatus = LoginStatus(false)
+
+  /** 获取用户喜欢的歌单 */
+  suspend fun getUserLikedPlaylist(userId: Long): CoverItem? = null
+
+  /** 设置 cookie */
+  fun setCookie(cookie: String?) {}
+
+  // ========== 个性化推荐接口 (需登录) ==========
+
+  /** 每日推荐歌单 */
+  suspend fun getDailyRecommendPlaylists(): List<CoverItem> = emptyList()
+
+  /** 每日推荐歌曲 */
+  suspend fun getDailyRecommendSongs(): List<Track> = emptyList()
+
+  /** 获取用户歌单列表 */
+  suspend fun getUserPlaylists(userId: Long): List<CoverItem> = emptyList()
 }

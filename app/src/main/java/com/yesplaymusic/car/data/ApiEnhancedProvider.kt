@@ -15,6 +15,42 @@ class ApiEnhancedProvider(
   private val client: OkHttpClient = OkHttpClient()
 ) : MusicProvider {
 
+  private var cookie: String? = null
+
+  override fun setCookie(cookie: String?) {
+    // 解析 cookie，提取 MUSIC_U 和 MUSIC_R_T
+    val parsed = parseCookie(cookie)
+    android.util.Log.d("ApiProvider", "setCookie 原始: ${cookie?.take(100)}...")
+    android.util.Log.d("ApiProvider", "setCookie 解析后: $parsed")
+    this.cookie = parsed
+  }
+
+  private fun parseCookie(rawCookie: String?): String? {
+    if (rawCookie.isNullOrBlank()) return null
+    // 提取所有 key=value 对，忽略 Max-Age, Expires, Path 等元数据
+    val cookieParts = mutableListOf<String>()
+    val segments = rawCookie.split(";").map { it.trim() }
+    for (segment in segments) {
+      val key = segment.substringBefore("=").trim()
+      // 只保留实际的 cookie 值，忽略元数据
+      if (key.equals("MUSIC_U", ignoreCase = true) ||
+          key.equals("MUSIC_R_T", ignoreCase = true) ||
+          key.equals("__csrf", ignoreCase = true)) {
+        cookieParts.add(segment)
+      }
+    }
+    return if (cookieParts.isNotEmpty()) cookieParts.joinToString("; ") else rawCookie
+  }
+
+  private fun buildRequest(url: String): Request {
+    val builder = Request.Builder().url(url)
+    cookie?.let {
+      android.util.Log.d("ApiProvider", "添加 Cookie header: $it")
+      builder.addHeader("Cookie", it)
+    } ?: android.util.Log.w("ApiProvider", "Cookie 为空，未添加 header")
+    return builder.build()
+  }
+
   override suspend fun search(keyword: String, limit: Int): List<Track> {
     return withContext(Dispatchers.IO) {
       val encoded = URLEncoder.encode(keyword, StandardCharsets.UTF_8.toString())
@@ -219,7 +255,7 @@ class ApiEnhancedProvider(
   override suspend fun getPersonalizedNewSongs(limit: Int): List<CoverItem> {
     return withContext(Dispatchers.IO) {
       val url = "$baseUrl/personalized/newsong?limit=$limit"
-      val response = client.newCall(Request.Builder().url(url).build()).execute()
+      val response = client.newCall(buildRequest(url)).execute()
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext emptyList()
         val body = resp.body?.string() ?: return@withContext emptyList()
@@ -237,6 +273,173 @@ class ApiEnhancedProvider(
             title = obj.str("name") ?: songObj.str("name") ?: "",
             subtitle = artist,
             coverUrl = albumObj?.str("picUrl")
+          )
+        }
+      }
+    }
+  }
+
+  // ========== 登录相关接口实现 ==========
+
+  override suspend fun getQrKey(): String? {
+    return withContext(Dispatchers.IO) {
+      val timestamp = System.currentTimeMillis()
+      val url = "$baseUrl/login/qr/key?timestamp=$timestamp"
+      val response = client.newCall(Request.Builder().url(url).build()).execute()
+      response.use { resp ->
+        if (!resp.isSuccessful) return@withContext null
+        val body = resp.body?.string() ?: return@withContext null
+        val root = JsonParser.parseString(body).asJsonObject
+        root.obj("data")?.str("unikey")
+      }
+    }
+  }
+
+  override suspend fun createQrCode(key: String): String? {
+    return withContext(Dispatchers.IO) {
+      val timestamp = System.currentTimeMillis()
+      val url = "$baseUrl/login/qr/create?key=$key&qrimg=true&timestamp=$timestamp"
+      val response = client.newCall(Request.Builder().url(url).build()).execute()
+      response.use { resp ->
+        if (!resp.isSuccessful) return@withContext null
+        val body = resp.body?.string() ?: return@withContext null
+        val root = JsonParser.parseString(body).asJsonObject
+        root.obj("data")?.str("qrimg")
+      }
+    }
+  }
+
+  override suspend fun checkQrStatus(key: String): QrCheckResult {
+    return withContext(Dispatchers.IO) {
+      val timestamp = System.currentTimeMillis()
+      val url = "$baseUrl/login/qr/check?key=$key&timestamp=$timestamp"
+      val response = client.newCall(Request.Builder().url(url).build()).execute()
+      response.use { resp ->
+        if (!resp.isSuccessful) return@withContext QrCheckResult(QrStatus.EXPIRED)
+        val body = resp.body?.string() ?: return@withContext QrCheckResult(QrStatus.EXPIRED)
+        val root = JsonParser.parseString(body).asJsonObject
+        val code = root.get("code")?.asInt ?: 800
+        val status = QrStatus.fromCode(code)
+        val cookie = root.str("cookie")
+        val message = root.str("message")
+        QrCheckResult(status, cookie, message)
+      }
+    }
+  }
+
+  override suspend fun getLoginStatus(): LoginStatus {
+    return withContext(Dispatchers.IO) {
+      val timestamp = System.currentTimeMillis()
+      // 使用 /user/account 接口获取用户信息
+      val url = "$baseUrl/user/account?timestamp=$timestamp"
+      val response = client.newCall(buildRequest(url)).execute()
+      response.use { resp ->
+        if (!resp.isSuccessful) {
+          android.util.Log.e("ApiProvider", "getLoginStatus 请求失败: ${resp.code}")
+          return@withContext LoginStatus(false)
+        }
+        val body = resp.body?.string() ?: return@withContext LoginStatus(false)
+        android.util.Log.d("ApiProvider", "getLoginStatus 响应: ${body.take(500)}")
+        val root = JsonParser.parseString(body).asJsonObject
+        val profile = root.obj("profile")
+        val account = root.obj("account")
+        val userId = profile?.long("userId") ?: account?.long("id")
+        if (userId == null || userId == 0L) {
+          android.util.Log.w("ApiProvider", "未找到用户ID, profile=$profile, account=$account")
+          return@withContext LoginStatus(false)
+        }
+        val user = UserInfo(
+          id = userId,
+          nickname = profile?.str("nickname") ?: "",
+          avatarUrl = profile?.str("avatarUrl"),
+          vipType = profile?.get("vipType")?.asInt ?: 0
+        )
+        android.util.Log.i("ApiProvider", "用户信息解析成功: $user")
+        LoginStatus(true, user)
+      }
+    }
+  }
+
+  override suspend fun getUserLikedPlaylist(userId: Long): CoverItem? {
+    return withContext(Dispatchers.IO) {
+      val url = "$baseUrl/user/playlist?uid=$userId&limit=1"
+      val response = client.newCall(buildRequest(url)).execute()
+      response.use { resp ->
+        if (!resp.isSuccessful) return@withContext null
+        val body = resp.body?.string() ?: return@withContext null
+        val root = JsonParser.parseString(body).asJsonObject
+        val playlists = root.arr("playlist") ?: return@withContext null
+        val first = playlists.firstOrNull()?.asJsonObject ?: return@withContext null
+        val id = first.long("id") ?: return@withContext null
+        CoverItem(
+          id = id,
+          title = first.str("name") ?: "我喜欢的音乐",
+          subtitle = "${first.get("trackCount")?.asInt ?: 0}首歌",
+          coverUrl = first.str("coverImgUrl")
+        )
+      }
+    }
+  }
+
+  // ========== 个性化推荐接口实现 ==========
+
+  override suspend fun getDailyRecommendPlaylists(): List<CoverItem> {
+    return withContext(Dispatchers.IO) {
+      val url = "$baseUrl/recommend/resource"
+      val response = client.newCall(buildRequest(url)).execute()
+      response.use { resp ->
+        if (!resp.isSuccessful) return@withContext emptyList()
+        val body = resp.body?.string() ?: return@withContext emptyList()
+        val root = JsonParser.parseString(body).asJsonObject
+        val items = root.arr("recommend") ?: return@withContext emptyList()
+        items.mapNotNull { item ->
+          val obj = item.asJsonObject
+          val id = obj.long("id") ?: return@mapNotNull null
+          CoverItem(
+            id = id,
+            title = obj.str("name") ?: "",
+            subtitle = obj.str("copywriter"),
+            coverUrl = obj.str("picUrl")
+          )
+        }
+      }
+    }
+  }
+
+  override suspend fun getDailyRecommendSongs(): List<Track> {
+    return withContext(Dispatchers.IO) {
+      val url = "$baseUrl/recommend/songs"
+      val response = client.newCall(buildRequest(url)).execute()
+      response.use { resp ->
+        if (!resp.isSuccessful) return@withContext emptyList()
+        val body = resp.body?.string() ?: return@withContext emptyList()
+        val root = JsonParser.parseString(body).asJsonObject
+        val data = root.obj("data") ?: return@withContext emptyList()
+        val songs = data.arr("dailySongs") ?: return@withContext emptyList()
+        songs.mapNotNull { item ->
+          parseTrack(item.asJsonObject)
+        }
+      }
+    }
+  }
+
+  override suspend fun getUserPlaylists(userId: Long): List<CoverItem> {
+    return withContext(Dispatchers.IO) {
+      val url = "$baseUrl/user/playlist?uid=$userId&limit=30"
+      val response = client.newCall(buildRequest(url)).execute()
+      response.use { resp ->
+        if (!resp.isSuccessful) return@withContext emptyList()
+        val body = resp.body?.string() ?: return@withContext emptyList()
+        val root = JsonParser.parseString(body).asJsonObject
+        val playlists = root.arr("playlist") ?: return@withContext emptyList()
+        playlists.mapNotNull { item ->
+          val obj = item.asJsonObject
+          val id = obj.long("id") ?: return@mapNotNull null
+          CoverItem(
+            id = id,
+            title = obj.str("name") ?: "",
+            subtitle = "${obj.get("trackCount")?.asInt ?: 0}首歌",
+            coverUrl = obj.str("coverImgUrl")
           )
         }
       }

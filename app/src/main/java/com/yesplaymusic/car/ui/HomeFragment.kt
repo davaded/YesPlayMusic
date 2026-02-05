@@ -1,14 +1,19 @@
 package com.yesplaymusic.car.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.lifecycle.lifecycleScope
+import coil.load
+import coil.transform.CircleCropTransformation
+import com.yesplaymusic.car.data.CookieStore
 import com.yesplaymusic.car.data.ProviderRegistry
 import com.yesplaymusic.car.R
+import com.yesplaymusic.car.data.CoverItem
 import com.yesplaymusic.car.data.MediaType
 import com.yesplaymusic.car.data.Track
 import com.yesplaymusic.car.databinding.FragmentHomeBinding
@@ -19,13 +24,30 @@ import kotlinx.coroutines.withContext
 
 class HomeFragment : Fragment() {
 
+  companion object {
+    private const val TAG = "HomeFragment"
+  }
+
   private var _binding: FragmentHomeBinding? = null
   private val binding get() = _binding!!
+
+  /** 供外部调用刷新用户信息和数据 */
+  fun refreshUserInfo() {
+    if (_binding != null) {
+      updateUserInfo()
+      loadData()
+    }
+  }
   private val provider = ProviderRegistry.get()
-  private val quickItems = mutableListOf<com.yesplaymusic.car.data.CoverItem>()
-  private val libraryItems = mutableListOf<com.yesplaymusic.car.data.CoverItem>()
-  private var heroItem: com.yesplaymusic.car.data.CoverItem? = null
+  private lateinit var cookieStore: CookieStore
+  private val quickItems = mutableListOf<CoverItem>()
+  private val libraryItems = mutableListOf<CoverItem>()
+  private var heroItem: CoverItem? = null
   private var heroType: MediaType = MediaType.PLAYLIST
+  private var likedPlaylist: CoverItem? = null
+
+  private lateinit var songGridAdapter: QuickTrackAdapter
+  private lateinit var libraryAdapter: LibraryCoverAdapter
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
     _binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -34,9 +56,19 @@ class HomeFragment : Fragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
+    cookieStore = CookieStore.getInstance(requireContext())
+
+    // 头像点击 -> 打开登录页面
+    binding.userAvatar.setOnClickListener {
+      Log.d(TAG, "头像点击 -> 打开登录页面")
+      (activity as? MainActivity)?.showLoginScreen()
+    }
+
+    // 更新用户信息显示
+    updateUserInfo()
 
     // 歌曲网格适配器 (3列)
-    val songGridAdapter = QuickTrackAdapter { item ->
+    songGridAdapter = QuickTrackAdapter { item ->
       val track = Track(
         id = item.id,
         title = item.title,
@@ -49,7 +81,7 @@ class HomeFragment : Fragment() {
     }
 
     // 专辑/歌单网格适配器 (5列)
-    val libraryAdapter = LibraryCoverAdapter { item ->
+    libraryAdapter = LibraryCoverAdapter { item ->
       (activity as? DetailNavigator)?.openMediaDetail(MediaType.PLAYLIST, item)
     }
 
@@ -75,40 +107,88 @@ class HomeFragment : Fragment() {
     binding.heroPlayButton.setOnClickListener { playHero() }
 
     // 加载数据
+    loadData()
+  }
+
+  private fun loadData() {
+    val userInfo = cookieStore.getCachedUserInfo()
+    val isLoggedIn = userInfo != null
+
     lifecycleScope.launch {
-      val recommendDeferred = async(Dispatchers.IO) { provider.getRecommendPlaylists(10) }
-      val forYouDeferred = async(Dispatchers.IO) { provider.getPersonalizedNewSongs(12) }
-      val albumDeferred = async(Dispatchers.IO) { provider.getNewAlbums(10) }
+      if (isLoggedIn && userInfo != null) {
+        // 已登录：使用个性化推荐
+        val likedDeferred = async(Dispatchers.IO) { provider.getUserLikedPlaylist(userInfo.id) }
+        val dailySongsDeferred = async(Dispatchers.IO) { provider.getDailyRecommendSongs() }
+        val userPlaylistsDeferred = async(Dispatchers.IO) { provider.getUserPlaylists(userInfo.id) }
 
-      val recommend = recommendDeferred.await()
-      val forYou = forYouDeferred.await()
-      val albums = albumDeferred.await()
+        val liked = likedDeferred.await()
+        val dailySongs = dailySongsDeferred.await()
+        val userPlaylists = userPlaylistsDeferred.await()
 
-      withContext(Dispatchers.Main) {
-        // 更新歌曲网格 (显示12首)
-        quickItems.clear()
-        quickItems.addAll(forYou.take(12))
-        songGridAdapter.submit(quickItems)
+        withContext(Dispatchers.Main) {
+          // 更新 Hero 卡片为"我喜欢的音乐"
+          likedPlaylist = liked
+          if (liked != null) {
+            heroItem = liked
+            heroType = MediaType.PLAYLIST
+          }
+          bindHero()
 
-        // 更新专辑/歌单网格
-        libraryItems.clear()
-        libraryItems.addAll(recommend)
-        if (libraryItems.isEmpty()) {
-          libraryItems.addAll(albums)
+          // 更新歌曲网格为每日推荐
+          quickItems.clear()
+          dailySongs.take(12).forEach { track ->
+            quickItems.add(CoverItem(
+              id = track.id,
+              title = track.title,
+              subtitle = track.artist,
+              coverUrl = track.coverUrl
+            ))
+          }
+          songGridAdapter.submit(quickItems)
+
+          // 更新专辑/歌单网格为用户歌单
+          libraryItems.clear()
+          // 跳过第一个（我喜欢的音乐），显示其他歌单
+          libraryItems.addAll(userPlaylists.drop(1).take(10))
+          libraryAdapter.submit(libraryItems)
         }
-        libraryAdapter.submit(libraryItems)
+      } else {
+        // 未登录：使用公开推荐
+        val recommendDeferred = async(Dispatchers.IO) { provider.getRecommendPlaylists(10) }
+        val forYouDeferred = async(Dispatchers.IO) { provider.getPersonalizedNewSongs(12) }
+        val albumDeferred = async(Dispatchers.IO) { provider.getNewAlbums(10) }
 
-        // 设置 Hero 卡片数据
-        if (recommend.isNotEmpty()) {
-          heroType = MediaType.PLAYLIST
-          heroItem = recommend.first()
-        } else if (albums.isNotEmpty()) {
-          heroType = MediaType.ALBUM
-          heroItem = albums.first()
-        } else {
-          heroItem = null
+        val recommend = recommendDeferred.await()
+        val forYou = forYouDeferred.await()
+        val albums = albumDeferred.await()
+
+        withContext(Dispatchers.Main) {
+          // 更新歌曲网格 (显示12首)
+          quickItems.clear()
+          quickItems.addAll(forYou.take(12))
+          songGridAdapter.submit(quickItems)
+
+          // 更新专辑/歌单网格
+          libraryItems.clear()
+          libraryItems.addAll(recommend)
+          if (libraryItems.isEmpty()) {
+            libraryItems.addAll(albums)
+          }
+          libraryAdapter.submit(libraryItems)
+
+          // 设置 Hero 卡片数据
+          likedPlaylist = null
+          if (recommend.isNotEmpty()) {
+            heroType = MediaType.PLAYLIST
+            heroItem = recommend.first()
+          } else if (albums.isNotEmpty()) {
+            heroType = MediaType.ALBUM
+            heroItem = albums.first()
+          } else {
+            heroItem = null
+          }
+          bindHero()
         }
-        bindHero()
       }
     }
   }
@@ -143,6 +223,32 @@ class HomeFragment : Fragment() {
       if (tracks.isNotEmpty()) {
         (activity as? PlaybackHost)?.playQueue(tracks, 0)
       }
+    }
+  }
+
+  override fun onResume() {
+    super.onResume()
+    // 每次回到首页时更新用户信息（登录后返回）
+    updateUserInfo()
+  }
+
+  private fun updateUserInfo() {
+    val userInfo = cookieStore.getCachedUserInfo()
+    if (userInfo != null) {
+      // 已登录，显示用户头像和昵称
+      binding.userTitle.text = "${userInfo.nickname}的音乐库"
+      userInfo.avatarUrl?.let { url ->
+        binding.userAvatarImage.load(url) {
+          crossfade(true)
+          transformations(CircleCropTransformation())
+          placeholder(R.drawable.ic_launcher_foreground)
+          error(R.drawable.ic_launcher_foreground)
+        }
+      }
+    } else {
+      // 未登录，显示默认
+      binding.userTitle.text = getString(R.string.home_user_title)
+      binding.userAvatarImage.setImageResource(R.drawable.ic_launcher_foreground)
     }
   }
 

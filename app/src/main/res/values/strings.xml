@@ -70,4 +70,16 @@
   <string name="repeat">循环播放</string>
   <string name="shuffle_all">随机播放全部</string>
   <string name="track_count">%d 首歌曲</string>
+
+  <!-- 登录相关 -->
+  <string name="login_subtitle">高品质车载音乐体验</string>
+  <string name="login_qr_title">扫码登录</string>
+  <string name="login_qr_hint">使用网易云音乐 App 扫描二维码</string>
+  <string name="login_qr_expired">二维码已过期</string>
+  <string name="login_qr_refresh">点击刷新</string>
+  <string name="login_waiting">等待扫码...</string>
+  <string name="login_confirming">请在手机上确认登录</string>
+  <string name="login_success">登录成功</string>
+  <string name="login_skip">跳过登录，以游客身份浏览</string>
+  <string name="login_failed">登录失败，请重试</string>
 </resources>

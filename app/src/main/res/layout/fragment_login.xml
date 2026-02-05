@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@drawable/bg_luminous_dark">
+
+  <!-- 环境光层 -->
+  <View
+    android:layout_width="500dp"
+    android:layout_height="500dp"
+    android:layout_gravity="center"
+    android:background="@drawable/bg_ambient_orb_blue"
+    android:alpha="0.2" />
+
+  <!-- 主内容 -->
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center">
+
+    <!-- ========== 左侧: 品牌介绍 ========== -->
+    <LinearLayout
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="0.45"
+      android:orientation="vertical"
+      android:gravity="center"
+      android:padding="48dp">
+
+      <!-- Logo -->
+      <ImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/ic_launcher_foreground"
+        android:contentDescription="@string/app_name" />
+
+      <!-- 标题 -->
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/app_name"
+        android:textColor="@color/textPrimary"
+        android:textSize="32sp"
+        android:fontFamily="@font/barlow_bold"
+        android:letterSpacing="-0.03" />
+
+      <!-- 副标题 -->
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/login_subtitle"
+        android:textColor="#99FFFFFF"
+        android:textSize="16sp"
+        android:fontFamily="@font/barlow_regular"
+        android:gravity="center" />
+
+    </LinearLayout>
+
+    <!-- ========== 右侧: 二维码卡片 ========== -->
+    <FrameLayout
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="0.55"
+      android:padding="48dp">
+
+      <!-- 磨砂玻璃卡片 -->
+      <LinearLayout
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="40dp"
+        android:background="@drawable/bg_glass_card">
+
+        <!-- 二维码标题 -->
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/login_qr_title"
+          android:textColor="@color/textPrimary"
+          android:textSize="20sp"
+          android:fontFamily="@font/barlow_semibold" />
+
+        <!-- 二维码说明 -->
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="8dp"
+          android:text="@string/login_qr_hint"
+          android:textColor="#99FFFFFF"
+          android:textSize="14sp"
+          android:fontFamily="@font/barlow_regular"
+          android:gravity="center" />
+
+        <!-- 二维码容器 -->
+        <FrameLayout
+          android:layout_width="220dp"
+          android:layout_height="220dp"
+          android:layout_marginTop="28dp">
+
+          <!-- 二维码图片 -->
+          <ImageView
+            android:id="@+id/qrCodeImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:background="#FFFFFF"
+            android:padding="12dp"
+            android:contentDescription="@string/login_qr_title" />
+
+          <!-- 加载中 -->
+          <ProgressBar
+            android:id="@+id/qrLoading"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="visible" />
+
+          <!-- 过期遮罩 -->
+          <LinearLayout
+            android:id="@+id/qrExpiredOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="#E6000000"
+            android:visibility="gone">
+
+            <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/login_qr_expired"
+              android:textColor="@color/textPrimary"
+              android:textSize="16sp"
+              android:fontFamily="@font/barlow_medium" />
+
+            <com.google.android.material.button.MaterialButton
+              android:id="@+id/refreshQrButton"
+              style="@style/Widget.Yes.Button.Outline"
+              android:layout_width="wrap_content"
+              android:layout_height="40dp"
+              android:layout_marginTop="12dp"
+              android:text="@string/login_qr_refresh"
+              android:textSize="14sp"
+              app:cornerRadius="20dp" />
+
+          </LinearLayout>
+
+        </FrameLayout>
+
+        <!-- 状态文字 -->
+        <TextView
+          android:id="@+id/loginStatus"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="20dp"
+          android:text="@string/login_waiting"
+          android:textColor="#99FFFFFF"
+          android:textSize="14sp"
+          android:fontFamily="@font/barlow_regular" />
+
+        <!-- 分割线 -->
+        <View
+          android:layout_width="120dp"
+          android:layout_height="1dp"
+          android:layout_marginTop="28dp"
+          android:background="#0DFFFFFF" />
+
+        <!-- 跳过登录 -->
+        <com.google.android.material.button.MaterialButton
+          android:id="@+id/skipLoginButton"
+          style="@style/Widget.Yes.IconButton.Ghost"
+          android:layout_width="wrap_content"
+          android:layout_height="44dp"
+          android:layout_marginTop="16dp"
+          android:text="@string/login_skip"
+          android:textColor="#66FFFFFF"
+          android:textSize="14sp"
+          app:iconTint="#66FFFFFF" />
+
+      </LinearLayout>
+
+    </FrameLayout>
+
+  </LinearLayout>
+
+</FrameLayout>

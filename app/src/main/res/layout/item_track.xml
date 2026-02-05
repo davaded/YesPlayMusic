@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
-  android:minHeight="@dimen/track_row_height"
-  android:padding="@dimen/track_padding"
-  android:layout_marginBottom="@dimen/list_item_spacing"
+  android:minHeight="72dp"
+  android:orientation="horizontal"
+  android:gravity="center_vertical"
+  android:paddingHorizontal="16dp"
+  android:paddingVertical="12dp"
+  android:layout_marginBottom="8dp"
   android:background="@drawable/bg_glass_hover"
   android:clickable="true"
   android:focusable="true">
@@ -14,15 +17,12 @@
   <!-- 封面 -->
   <com.google.android.material.card.MaterialCardView
     android:id="@+id/coverCard"
-    android:layout_width="@dimen/track_cover_size"
-    android:layout_height="@dimen/track_cover_size"
-    app:cardCornerRadius="@dimen/track_cover_radius"
-    app:cardElevation="4dp"
+    android:layout_width="52dp"
+    android:layout_height="52dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="0dp"
     app:cardBackgroundColor="@color/surfaceAlt"
-    app:strokeWidth="0dp"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent">
+    app:strokeWidth="0dp">
 
     <ImageView
       android:id="@+id/cover"
@@ -33,53 +33,52 @@
       android:src="@drawable/ic_launcher_foreground" />
   </com.google.android.material.card.MaterialCardView>
 
-  <!-- 标题 -->
-  <TextView
-    android:id="@+id/trackTitle"
+  <!-- 标题和副标题 -->
+  <LinearLayout
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_marginStart="20dp"
-    android:text=""
-    android:textColor="@color/textPrimary"
-    android:textSize="@dimen/track_title_size"
-    android:fontFamily="@font/barlow_semibold"
-    android:letterSpacing="0.01"
-    android:maxLines="1"
-    android:ellipsize="end"
-    app:layout_constraintStart_toEndOf="@id/coverCard"
-    app:layout_constraintTop_toTopOf="@id/coverCard"
-    app:layout_constraintEnd_toStartOf="@id/playItemButton"
-    app:layout_constraintBottom_toTopOf="@id/trackSubtitle"
-    app:layout_constraintVertical_chainStyle="packed" />
+    android:layout_weight="1"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:orientation="vertical">
 
-  <!-- 副标题 -->
-  <TextView
-    android:id="@+id/trackSubtitle"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="20dp"
-    android:layout_marginTop="6dp"
-    android:text=""
-    android:textColor="@color/textSecondary"
-    android:textSize="@dimen/track_subtitle_size"
-    android:fontFamily="@font/barlow_regular"
-    android:letterSpacing="0.01"
-    android:maxLines="1"
-    android:ellipsize="end"
-    app:layout_constraintStart_toEndOf="@id/coverCard"
-    app:layout_constraintTop_toBottomOf="@id/trackTitle"
-    app:layout_constraintEnd_toStartOf="@id/playItemButton"
-    app:layout_constraintBottom_toBottomOf="@id/coverCard" />
+    <!-- 标题 -->
+    <TextView
+      android:id="@+id/trackTitle"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text=""
+      android:textColor="@color/textPrimary"
+      android:textSize="16sp"
+      android:fontFamily="@font/barlow_semibold"
+      android:letterSpacing="-0.01"
+      android:maxLines="1"
+      android:ellipsize="end" />
 
-  <!-- 播放按钮 -->
+    <!-- 副标题 -->
+    <TextView
+      android:id="@+id/trackSubtitle"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="4dp"
+      android:text=""
+      android:textColor="#99FFFFFF"
+      android:textSize="14sp"
+      android:fontFamily="@font/barlow_regular"
+      android:maxLines="1"
+      android:ellipsize="end" />
+
+  </LinearLayout>
+
+  <!-- 播放按钮 - 纯图标 Ghost -->
   <com.google.android.material.button.MaterialButton
     android:id="@+id/playItemButton"
-    android:layout_width="@dimen/track_button_width"
-    android:layout_height="@dimen/track_button_height"
-    android:text="@string/play"
-    style="@style/Widget.Yes.Button.Outline"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent" />
+    style="@style/Widget.Yes.IconButton.Ghost"
+    android:layout_width="44dp"
+    android:layout_height="44dp"
+    android:contentDescription="@string/play"
+    app:icon="@drawable/ic_play_24"
+    app:iconSize="20dp"
+    app:iconTint="#99FFFFFF" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

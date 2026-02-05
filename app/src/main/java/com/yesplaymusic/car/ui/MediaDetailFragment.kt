@@ -53,6 +53,17 @@ class MediaDetailFragment : Fragment() {
       parentFragmentManager.popBackStack()
     }
 
+    // 返回按钮点击事件
+    binding.backButton.setOnClickListener {
+      parentFragmentManager.popBackStack()
+    }
+
+    // 搜索按钮点击事件
+    binding.searchPillButton.setOnClickListener {
+      binding.detailSearchCard.visibility =
+        if (binding.detailSearchCard.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+    }
+
     bindHeader(title, subtitle, coverUrl)
 
     val adapter = TrackListAdapter { index ->

@@ -44,7 +44,7 @@ class HomeFragment : Fragment() {
   private val libraryItems = mutableListOf<CoverItem>()
   private var heroItem: CoverItem? = null
   private var heroType: MediaType = MediaType.PLAYLIST
-  private var likedPlaylist: CoverItem? = null
+  private var dailyRecommendTracks: List<Track> = emptyList() // 保存每日推荐歌曲用于播放
 
   private lateinit var songGridAdapter: QuickTrackAdapter
   private lateinit var libraryAdapter: LibraryCoverAdapter
@@ -117,22 +117,18 @@ class HomeFragment : Fragment() {
     lifecycleScope.launch {
       if (isLoggedIn && userInfo != null) {
         // 已登录：使用个性化推荐
-        val likedDeferred = async(Dispatchers.IO) { provider.getUserLikedPlaylist(userInfo.id) }
         val dailySongsDeferred = async(Dispatchers.IO) { provider.getDailyRecommendSongs() }
         val userPlaylistsDeferred = async(Dispatchers.IO) { provider.getUserPlaylists(userInfo.id) }
 
-        val liked = likedDeferred.await()
         val dailySongs = dailySongsDeferred.await()
         val userPlaylists = userPlaylistsDeferred.await()
 
         withContext(Dispatchers.Main) {
-          // 更新 Hero 卡片为"我喜欢的音乐"
-          likedPlaylist = liked
-          if (liked != null) {
-            heroItem = liked
-            heroType = MediaType.PLAYLIST
-          }
-          bindHero()
+          // 保存每日推荐歌曲用于 Hero 播放
+          dailyRecommendTracks = dailySongs
+
+          // 更新 Hero 卡片为"每日推荐"
+          bindHero(isDaily = true, trackCount = dailySongs.size)
 
           // 更新歌曲网格为每日推荐
           quickItems.clear()
@@ -177,7 +173,7 @@ class HomeFragment : Fragment() {
           libraryAdapter.submit(libraryItems)
 
           // 设置 Hero 卡片数据
-          likedPlaylist = null
+          dailyRecommendTracks = emptyList()
           if (recommend.isNotEmpty()) {
             heroType = MediaType.PLAYLIST
             heroItem = recommend.first()
@@ -187,30 +183,47 @@ class HomeFragment : Fragment() {
           } else {
             heroItem = null
           }
-          bindHero()
+          bindHero(isDaily = false, trackCount = 0)
         }
       }
     }
   }
 
-  private fun bindHero() {
-    val item = heroItem
-    if (item == null) {
-      binding.heroCard.visibility = View.GONE
-      return
-    }
+  private fun bindHero(isDaily: Boolean = false, trackCount: Int = 0) {
     binding.heroCard.visibility = View.VISIBLE
-    // Hero 卡片使用固定文字，不再动态绑定封面
-    binding.heroTitle.text = getString(R.string.hero_favorite_title)
-    binding.heroSubtitle.text = getString(R.string.hero_favorite_count)
+    if (isDaily) {
+      // 每日推荐
+      binding.heroTitle.text = getString(R.string.hero_daily_title)
+      binding.heroSubtitle.text = getString(R.string.hero_daily_count, trackCount)
+    } else {
+      // 未登录时显示推荐歌单
+      val item = heroItem
+      if (item == null) {
+        binding.heroCard.visibility = View.GONE
+        return
+      }
+      binding.heroTitle.text = item.title
+      binding.heroSubtitle.text = item.subtitle ?: ""
+    }
   }
 
   private fun openHeroDetail() {
+    // 每日推荐不跳转详情，直接播放
+    if (dailyRecommendTracks.isNotEmpty()) {
+      playHero()
+      return
+    }
     val item = heroItem ?: return
     (activity as? DetailNavigator)?.openMediaDetail(heroType, item)
   }
 
   private fun playHero() {
+    // 如果有每日推荐歌曲，直接播放
+    if (dailyRecommendTracks.isNotEmpty()) {
+      (activity as? PlaybackHost)?.playQueue(dailyRecommendTracks, 0)
+      return
+    }
+    // 否则获取歌单/专辑详情播放
     val item = heroItem ?: return
     lifecycleScope.launch {
       val detail = withContext(Dispatchers.IO) {

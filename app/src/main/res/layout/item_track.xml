@@ -1,74 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<androidx.constraintlayout.widget.ConstraintLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
-  style="@style/Widget.Yes.Card"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
+  android:minHeight="@dimen/track_row_height"
+  android:padding="@dimen/track_padding"
+  android:layout_marginBottom="@dimen/list_item_spacing"
+  android:background="@drawable/bg_glass_hover"
   android:clickable="true"
-  android:focusable="true"
-  android:foreground="?attr/selectableItemBackground">
+  android:focusable="true">
 
-  <androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="@dimen/track_row_height"
-    android:padding="@dimen/track_padding">
+  <!-- 封面 -->
+  <com.google.android.material.card.MaterialCardView
+    android:id="@+id/coverCard"
+    android:layout_width="@dimen/track_cover_size"
+    android:layout_height="@dimen/track_cover_size"
+    app:cardCornerRadius="@dimen/track_cover_radius"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@color/surfaceAlt"
+    app:strokeWidth="0dp"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent">
 
     <ImageView
       android:id="@+id/cover"
-      android:layout_width="@dimen/track_cover_size"
-      android:layout_height="@dimen/track_cover_size"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
       android:scaleType="centerCrop"
       android:contentDescription="@string/app_name"
-      android:src="@drawable/ic_launcher_foreground"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintBottom_toBottomOf="parent" />
+      android:src="@drawable/ic_launcher_foreground" />
+  </com.google.android.material.card.MaterialCardView>
 
-    <TextView
-      android:id="@+id/trackTitle"
-      android:layout_width="0dp"
-      android:layout_height="wrap_content"
-      android:layout_marginStart="16dp"
-      android:text=""
-      android:textColor="@color/textPrimary"
-      android:textSize="@dimen/track_title_size"
-      android:fontFamily="@font/barlow_semibold"
-      android:letterSpacing="0.01"
-      android:maxLines="1"
-      android:ellipsize="end"
-      app:layout_constraintStart_toEndOf="@id/cover"
-      app:layout_constraintTop_toTopOf="@id/cover"
-      app:layout_constraintEnd_toStartOf="@id/playItemButton" />
+  <!-- 标题 -->
+  <TextView
+    android:id="@+id/trackTitle"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="20dp"
+    android:text=""
+    android:textColor="@color/textPrimary"
+    android:textSize="@dimen/track_title_size"
+    android:fontFamily="@font/barlow_semibold"
+    android:letterSpacing="0.01"
+    android:maxLines="1"
+    android:ellipsize="end"
+    app:layout_constraintStart_toEndOf="@id/coverCard"
+    app:layout_constraintTop_toTopOf="@id/coverCard"
+    app:layout_constraintEnd_toStartOf="@id/playItemButton"
+    app:layout_constraintBottom_toTopOf="@id/trackSubtitle"
+    app:layout_constraintVertical_chainStyle="packed" />
 
-    <TextView
-      android:id="@+id/trackSubtitle"
-      android:layout_width="0dp"
-      android:layout_height="wrap_content"
-      android:layout_marginStart="16dp"
-      android:layout_marginTop="6dp"
-      android:text=""
-      android:textColor="@color/textTertiary"
-      android:textSize="@dimen/track_subtitle_size"
-      android:fontFamily="@font/barlow_regular"
-      android:letterSpacing="0.01"
-      android:maxLines="1"
-      android:ellipsize="end"
-      app:layout_constraintStart_toEndOf="@id/cover"
-      app:layout_constraintTop_toBottomOf="@id/trackTitle"
-      app:layout_constraintEnd_toStartOf="@id/playItemButton" />
+  <!-- 副标题 -->
+  <TextView
+    android:id="@+id/trackSubtitle"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="20dp"
+    android:layout_marginTop="6dp"
+    android:text=""
+    android:textColor="@color/textSecondary"
+    android:textSize="@dimen/track_subtitle_size"
+    android:fontFamily="@font/barlow_regular"
+    android:letterSpacing="0.01"
+    android:maxLines="1"
+    android:ellipsize="end"
+    app:layout_constraintStart_toEndOf="@id/coverCard"
+    app:layout_constraintTop_toBottomOf="@id/trackTitle"
+    app:layout_constraintEnd_toStartOf="@id/playItemButton"
+    app:layout_constraintBottom_toBottomOf="@id/coverCard" />
 
-    <com.google.android.material.button.MaterialButton
-      android:id="@+id/playItemButton"
-      android:layout_width="@dimen/track_button_width"
-      android:layout_height="@dimen/track_button_height"
-      android:text="@string/play"
-      style="@style/Widget.Yes.Button.Outline"
-      app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent" />
+  <!-- 播放按钮 -->
+  <com.google.android.material.button.MaterialButton
+    android:id="@+id/playItemButton"
+    android:layout_width="@dimen/track_button_width"
+    android:layout_height="@dimen/track_button_height"
+    android:text="@string/play"
+    style="@style/Widget.Yes.Button.Outline"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent" />
 
-  </androidx.constraintlayout.widget.ConstraintLayout>
-
-</com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

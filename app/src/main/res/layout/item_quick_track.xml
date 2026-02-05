@@ -5,10 +5,11 @@
   android:layout_width="match_parent"
   android:layout_height="@dimen/song_item_height"
   android:padding="@dimen/song_item_padding"
-  android:background="@drawable/bg_song_item_hover"
+  android:background="@drawable/bg_glass_hover"
   android:clickable="true"
   android:focusable="true">
 
+  <!-- 封面卡片 -->
   <com.google.android.material.card.MaterialCardView
     android:id="@+id/quickCoverCard"
     android:layout_width="@dimen/song_item_cover_size"
@@ -16,6 +17,7 @@
     app:cardCornerRadius="@dimen/song_item_cover_radius"
     app:cardElevation="4dp"
     app:cardBackgroundColor="@color/surfaceAlt"
+    app:strokeWidth="0dp"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintBottom_toBottomOf="parent">
@@ -29,6 +31,7 @@
       android:contentDescription="@string/app_name" />
   </com.google.android.material.card.MaterialCardView>
 
+  <!-- 标题 -->
   <TextView
     android:id="@+id/quickTitle"
     android:layout_width="0dp"
@@ -45,6 +48,7 @@
     app:layout_constraintBottom_toTopOf="@id/quickSubtitle"
     app:layout_constraintVertical_chainStyle="packed" />
 
+  <!-- 副标题 -->
   <TextView
     android:id="@+id/quickSubtitle"
     android:layout_width="0dp"

@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <!-- ========== 沉浸式全屏 - 极小边距 ========== -->
-  <dimen name="screen_padding">24dp</dimen>
-  <dimen name="screen_padding_small">16dp</dimen>
+  <!-- ========== Apple Music 风格 - 呼吸感排版 ========== -->
+  <dimen name="screen_padding">32dp</dimen>
+  <dimen name="screen_padding_small">20dp</dimen>
   <dimen name="shell_margin">0dp</dimen>
   <dimen name="shell_radius">0dp</dimen>
   <dimen name="shell_elevation">0dp</dimen>
-  <dimen name="shell_padding">24dp</dimen>
+  <dimen name="shell_padding">32dp</dimen>
 
-  <!-- ========== 精致字号 (小而清晰) ========== -->
-  <!-- 工具栏 -->
+  <!-- ========== 精致字号 ========== -->
   <dimen name="toolbar_height">64dp</dimen>
   <dimen name="toolbar_title_size">18sp</dimen>
   <dimen name="tab_height">56dp</dimen>
@@ -18,7 +17,11 @@
   <dimen name="top_bar_logo_size">32dp</dimen>
   <dimen name="top_bar_title_size">17sp</dimen>
 
-  <!-- 搜索框 -->
+  <!-- ========== 胶囊搜索 ========== -->
+  <dimen name="search_pill_width">48dp</dimen>
+  <dimen name="search_pill_height">48dp</dimen>
+  <dimen name="search_pill_radius">24dp</dimen>
+  <dimen name="search_expanded_width">320dp</dimen>
   <dimen name="search_chip_width">240dp</dimen>
   <dimen name="search_chip_height">44dp</dimen>
   <dimen name="search_chip_radius">22dp</dimen>
@@ -30,52 +33,52 @@
   <dimen name="user_header_gap">16dp</dimen>
   <dimen name="user_header_margin_bottom">24dp</dimen>
 
-  <!-- ========== Hero 区域 (紧凑但有呼吸感) ========== -->
-  <dimen name="hero_row_height">200dp</dimen>
-  <dimen name="hero_row_margin_bottom">28dp</dimen>
-  <dimen name="hero_card_height">200dp</dimen>
-  <dimen name="hero_card_radius">20dp</dimen>
-  <dimen name="hero_padding">24dp</dimen>
-  <dimen name="hero_title_size">22sp</dimen>
-  <dimen name="hero_subtitle_size">14sp</dimen>
-  <dimen name="hero_label_size">12sp</dimen>
-  <dimen name="hero_lyric_size">13sp</dimen>
-  <dimen name="hero_cover_size">120dp</dimen>
-  <dimen name="hero_play_size">52dp</dimen>
-  <dimen name="hero_gap">20dp</dimen>
+  <!-- ========== Hero 区域 ========== -->
+  <dimen name="hero_row_height">220dp</dimen>
+  <dimen name="hero_row_margin_bottom">32dp</dimen>
+  <dimen name="hero_card_height">220dp</dimen>
+  <dimen name="hero_card_radius">24dp</dimen>
+  <dimen name="hero_padding">28dp</dimen>
+  <dimen name="hero_title_size">24sp</dimen>
+  <dimen name="hero_subtitle_size">15sp</dimen>
+  <dimen name="hero_label_size">13sp</dimen>
+  <dimen name="hero_lyric_size">14sp</dimen>
+  <dimen name="hero_cover_size">140dp</dimen>
+  <dimen name="hero_play_size">56dp</dimen>
+  <dimen name="hero_gap">24dp</dimen>
 
-  <!-- ========== 歌曲网格 (精致字号 + 大点击热区) ========== -->
-  <dimen name="song_item_height">64dp</dimen>
-  <dimen name="song_item_cover_size">48dp</dimen>
-  <dimen name="song_item_cover_radius">10dp</dimen>
-  <dimen name="song_item_title_size">14sp</dimen>
-  <dimen name="song_item_subtitle_size">12sp</dimen>
-  <dimen name="song_item_padding">10dp</dimen>
-  <dimen name="song_grid_spacing_h">16dp</dimen>
-  <dimen name="song_grid_spacing_v">8dp</dimen>
+  <!-- ========== 歌曲网格 ========== -->
+  <dimen name="song_item_height">72dp</dimen>
+  <dimen name="song_item_cover_size">52dp</dimen>
+  <dimen name="song_item_cover_radius">12dp</dimen>
+  <dimen name="song_item_title_size">15sp</dimen>
+  <dimen name="song_item_subtitle_size">13sp</dimen>
+  <dimen name="song_item_padding">12dp</dimen>
+  <dimen name="song_grid_spacing_h">20dp</dimen>
+  <dimen name="song_grid_spacing_v">12dp</dimen>
 
   <!-- ========== 筛选栏 ========== -->
-  <dimen name="filter_tab_size">14sp</dimen>
-  <dimen name="filter_tab_spacing">28dp</dimen>
-  <dimen name="filter_margin_bottom">20dp</dimen>
+  <dimen name="filter_tab_size">15sp</dimen>
+  <dimen name="filter_tab_spacing">32dp</dimen>
+  <dimen name="filter_margin_bottom">24dp</dimen>
 
-  <!-- ========== 横向卡片流 - 专辑封面 ========== -->
-  <dimen name="library_cover_size">160dp</dimen>
-  <dimen name="library_cover_radius">16dp</dimen>
-  <dimen name="library_title_size">14sp</dimen>
-  <dimen name="library_subtitle_size">12sp</dimen>
-  <dimen name="library_item_spacing">16dp</dimen>
+  <!-- ========== 横向卡片流 ========== -->
+  <dimen name="library_cover_size">180dp</dimen>
+  <dimen name="library_cover_radius">20dp</dimen>
+  <dimen name="library_title_size">15sp</dimen>
+  <dimen name="library_subtitle_size">13sp</dimen>
+  <dimen name="library_item_spacing">20dp</dimen>
 
   <!-- 旧版兼容 -->
   <dimen name="home_header_avatar">32dp</dimen>
   <dimen name="home_header_gap">10dp</dimen>
   <dimen name="home_header_title_size">20sp</dimen>
-  <dimen name="section_title_size">20sp</dimen>
-  <dimen name="home_title_size">22sp</dimen>
-  <dimen name="section_title_margin_bottom">16dp</dimen>
-  <dimen name="section_padding_top">20dp</dimen>
-  <dimen name="section_padding_bottom">24dp</dimen>
-  <dimen name="section_list_margin_top">12dp</dimen>
+  <dimen name="section_title_size">22sp</dimen>
+  <dimen name="home_title_size">24sp</dimen>
+  <dimen name="section_title_margin_bottom">20dp</dimen>
+  <dimen name="section_padding_top">24dp</dimen>
+  <dimen name="section_padding_bottom">28dp</dimen>
+  <dimen name="section_list_margin_top">16dp</dimen>
   <dimen name="home_section_spacing_vertical">16dp</dimen>
   <dimen name="home_section_spacing_horizontal">12dp</dimen>
   <dimen name="quick_card_height">200dp</dimen>
@@ -85,69 +88,93 @@
 
   <!-- ========== 通用封面 ========== -->
   <dimen name="cover_size">180dp</dimen>
-  <dimen name="cover_radius">18dp</dimen>
+  <dimen name="cover_radius">20dp</dimen>
   <dimen name="cover_title_size">15sp</dimen>
   <dimen name="cover_subtitle_size">13sp</dimen>
-  <dimen name="cover_title_margin_top">10dp</dimen>
+  <dimen name="cover_title_margin_top">12dp</dimen>
   <dimen name="cover_subtitle_margin_top">4dp</dimen>
-  <dimen name="album_cover_radius">16dp</dimen>
+  <dimen name="album_cover_radius">20dp</dimen>
 
   <!-- ========== 搜索页 ========== -->
   <dimen name="search_height">56dp</dimen>
   <dimen name="search_button_width">100dp</dimen>
   <dimen name="search_input_padding">20dp</dimen>
-  <dimen name="search_status_margin_top">12dp</dimen>
+  <dimen name="search_status_margin_top">16dp</dimen>
   <dimen name="search_status_size">14sp</dimen>
 
-  <!-- ========== 曲目列表 (大点击热区) ========== -->
-  <dimen name="track_row_height">80dp</dimen>
-  <dimen name="track_padding">14dp</dimen>
-  <dimen name="track_cover_size">56dp</dimen>
-  <dimen name="track_title_size">15sp</dimen>
-  <dimen name="track_subtitle_size">13sp</dimen>
+  <!-- ========== 呼吸感列表 (大行高) ========== -->
+  <dimen name="track_row_height">88dp</dimen>
+  <dimen name="track_padding">16dp</dimen>
+  <dimen name="track_cover_size">60dp</dimen>
+  <dimen name="track_cover_radius">14dp</dimen>
+  <dimen name="track_title_size">16sp</dimen>
+  <dimen name="track_subtitle_size">14sp</dimen>
   <dimen name="track_button_width">100dp</dimen>
   <dimen name="track_button_height">44dp</dimen>
-  <dimen name="list_item_spacing">10dp</dimen>
+  <dimen name="list_item_spacing">12dp</dimen>
 
-  <!-- ========== 播放器页面 ========== -->
-  <dimen name="player_cover_size">320dp</dimen>
-  <dimen name="player_cover_radius">24dp</dimen>
-  <dimen name="player_title_size">26sp</dimen>
-  <dimen name="player_subtitle_size">16sp</dimen>
+  <!-- ========== 播放器页面 - 45:55 分屏 ========== -->
+  <dimen name="player_cover_size">380dp</dimen>
+  <dimen name="player_cover_radius">28dp</dimen>
+  <dimen name="player_cover_shadow">32dp</dimen>
+  <dimen name="player_title_size">28sp</dimen>
+  <dimen name="player_subtitle_size">17sp</dimen>
   <dimen name="player_status_size">14sp</dimen>
   <dimen name="player_button_height">56dp</dimen>
-  <dimen name="player_controls_gap">24dp</dimen>
+  <dimen name="player_controls_gap">40dp</dimen>
+  <dimen name="player_play_button_size">80dp</dimen>
+  <dimen name="player_nav_button_size">56dp</dimen>
+
+  <!-- 浮动歌词 -->
+  <dimen name="lyrics_active_size">22sp</dimen>
+  <dimen name="lyrics_next_size">17sp</dimen>
+  <dimen name="lyrics_past_size">15sp</dimen>
+  <dimen name="lyrics_line_height">48dp</dimen>
+  <dimen name="lyrics_text_size">17sp</dimen>
+  <dimen name="lyrics_title_size">15sp</dimen>
+  <dimen name="lyrics_card_padding">20dp</dimen>
+  <dimen name="lyrics_line_padding">8dp</dimen>
+  <dimen name="lyrics_line_spacing">6dp</dimen>
+
+  <!-- 环境光球 -->
+  <dimen name="ambient_orb_size">400dp</dimen>
+  <dimen name="ambient_orb_blur">120dp</dimen>
+
   <dimen name="mv_button_height">44dp</dimen>
   <dimen name="info_card_padding">16dp</dimen>
-  <dimen name="lyrics_text_size">15sp</dimen>
-  <dimen name="lyrics_title_size">14sp</dimen>
-  <dimen name="lyrics_card_padding">16dp</dimen>
-  <dimen name="lyrics_line_padding">6dp</dimen>
-  <dimen name="lyrics_line_spacing">4dp</dimen>
 
   <!-- ========== 卡片通用 ========== -->
-  <dimen name="card_radius">18dp</dimen>
-  <dimen name="card_elevation">4dp</dimen>
-  <dimen name="cover_elevation">8dp</dimen>
-  <dimen name="button_corner_radius">20dp</dimen>
-  <dimen name="icon_button_size">48dp</dimen>
-  <dimen name="icon_button_radius">16dp</dimen>
-  <dimen name="round_button_size">52dp</dimen>
-  <dimen name="round_button_radius">26dp</dimen>
+  <dimen name="card_radius">20dp</dimen>
+  <dimen name="card_elevation">0dp</dimen>
+  <dimen name="cover_elevation">16dp</dimen>
+  <dimen name="button_corner_radius">24dp</dimen>
+  <dimen name="icon_button_size">56dp</dimen>
+  <dimen name="icon_button_radius">18dp</dimen>
+  <dimen name="round_button_size">56dp</dimen>
+  <dimen name="round_button_radius">28dp</dimen>
 
-  <!-- ========== 固定底部播放条 (加大高度) ========== -->
-  <dimen name="mini_player_height">88dp</dimen>
+  <!-- ========== 磨砂玻璃卡片 ========== -->
+  <dimen name="glass_radius">24dp</dimen>
+  <dimen name="glass_padding">24dp</dimen>
+  <dimen name="glass_border">1dp</dimen>
+
+  <!-- ========== 固定底部播放条 ========== -->
+  <dimen name="mini_player_height">96dp</dimen>
   <dimen name="mini_player_radius">0dp</dimen>
   <dimen name="mini_player_elevation">0dp</dimen>
-  <dimen name="mini_cover_size">56dp</dimen>
-  <dimen name="mini_button_size">48dp</dimen>
-  <dimen name="mini_title_size">15sp</dimen>
-  <dimen name="mini_subtitle_size">13sp</dimen>
+  <dimen name="mini_cover_size">64dp</dimen>
+  <dimen name="mini_cover_radius">14dp</dimen>
+  <dimen name="mini_button_size">52dp</dimen>
+  <dimen name="mini_title_size">16sp</dimen>
+  <dimen name="mini_subtitle_size">14sp</dimen>
 
-  <!-- ========== 详情页 ========== -->
-  <dimen name="detail_cover_size">180dp</dimen>
-  <dimen name="detail_title_size">20sp</dimen>
-  <dimen name="detail_subtitle_size">15sp</dimen>
+  <!-- ========== 详情页 - 大封面头部 ========== -->
+  <dimen name="detail_header_height">280dp</dimen>
+  <dimen name="detail_cover_size">200dp</dimen>
+  <dimen name="detail_cover_radius">24dp</dimen>
+  <dimen name="detail_title_size">24sp</dimen>
+  <dimen name="detail_subtitle_size">16sp</dimen>
   <dimen name="detail_status_size">14sp</dimen>
   <dimen name="detail_toolbar_height">64dp</dimen>
+  <dimen name="detail_action_button_size">56dp</dimen>
 </resources>

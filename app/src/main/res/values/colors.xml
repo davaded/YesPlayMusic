@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <!-- ========== 高对比度配色 - 特斯拉/蔚来风格 ========== -->
+  <!-- ========== Apple Music 风格 - 流动光影 ========== -->
 
-  <!-- 背景色 -->
+  <!-- 基础背景 - 纯黑沉浸 -->
   <color name="background">#000000</color>
   <color name="surface">#0A0A0A</color>
   <color name="surfaceAlt">#141414</color>
   <color name="surfaceElevated">#1A1A1A</color>
+
+  <!-- 磨砂玻璃效果 -->
+  <color name="glassBackground">#1A1A1A1A</color>
+  <color name="glassBorder">#33FFFFFF</color>
+  <color name="glassLight">#0DFFFFFF</color>
 
   <!-- 主色调 -->
   <color name="primary">#3B82F6</color>
@@ -18,6 +23,12 @@
   <color name="textSecondary">#9CA3AF</color>
   <color name="textTertiary">#6B7280</color>
   <color name="textMuted">#4B5563</color>
+  <color name="textDimmed">#374151</color>
+
+  <!-- 歌词专用颜色 -->
+  <color name="lyricActive">#FFFFFF</color>
+  <color name="lyricNext">#6B7280</color>
+  <color name="lyricPast">#374151</color>
 
   <!-- 导航和分割线 -->
   <color name="navBar">#0A0A0A</color>
@@ -28,6 +39,18 @@
   <!-- 交互色 -->
   <color name="ripple">#1A3B82F6</color>
   <color name="hoverBackground">#1A1A1A</color>
+  <color name="hoverGlass">#1AFFFFFF</color>
+
+  <!-- 环境光颜色 (动态提取封面色时的默认值) -->
+  <color name="ambientPink">#EC4899</color>
+  <color name="ambientBlue">#3B82F6</color>
+  <color name="ambientPurple">#8B5CF6</color>
+  <color name="ambientOrange">#F97316</color>
+  <color name="ambientGreen">#10B981</color>
+
+  <!-- 环境光透明度 -->
+  <color name="ambientGlow1">#33EC4899</color>
+  <color name="ambientGlow2">#333B82F6</color>
 
   <!-- Hero 卡片 - 渐变蓝 -->
   <color name="heroCard">#0F172A</color>
@@ -48,4 +71,9 @@
   <!-- 正在播放高亮 -->
   <color name="nowPlaying">#22C55E</color>
   <color name="nowPlayingBg">#14532D</color>
+
+  <!-- 彩色阴影 (用于封面) -->
+  <color name="shadowPink">#40EC4899</color>
+  <color name="shadowBlue">#403B82F6</color>
+  <color name="shadowPurple">#408B5CF6</color>
 </resources>

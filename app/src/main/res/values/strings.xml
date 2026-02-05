@@ -66,4 +66,8 @@
   <string name="status_playing">播放中</string>
   <string name="status_paused">已暂停</string>
   <string name="status_ended">播放完毕</string>
+  <string name="shuffle">随机播放</string>
+  <string name="repeat">循环播放</string>
+  <string name="shuffle_all">随机播放全部</string>
+  <string name="track_count">%d 首歌曲</string>
 </resources>

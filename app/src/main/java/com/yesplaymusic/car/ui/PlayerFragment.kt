@@ -78,18 +78,22 @@ class PlayerFragment : Fragment() {
     }
 
     viewModel.isPlaying.observe(viewLifecycleOwner) { isPlaying ->
-      binding.playButton.text = if (isPlaying) getString(R.string.pause) else getString(R.string.play)
+      binding.playButton.setIconResource(
+        if (isPlaying) R.drawable.ic_pause_24 else R.drawable.ic_play_24
+      )
     }
 
     viewModel.durationMs.observe(viewLifecycleOwner) { duration ->
       val max = duration.coerceAtLeast(1L).toFloat()
       binding.seekBar.valueTo = max
+      binding.totalTime.text = formatDuration(duration)
     }
 
     viewModel.positionMs.observe(viewLifecycleOwner) { position ->
       if (!binding.seekBar.isPressed) {
         binding.seekBar.value = position.toFloat().coerceAtLeast(0f).coerceAtMost(binding.seekBar.valueTo)
       }
+      binding.currentTime.text = formatDuration(position)
       updateLyricsPosition(position)
     }
 

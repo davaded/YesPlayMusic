@@ -46,13 +46,19 @@ class LyricsAdapter : RecyclerView.Adapter<LyricsAdapter.LyricViewHolder>() {
     fun bind(line: LyricLine, isActive: Boolean) {
       binding.lyricLine.text = line.text
       val context = binding.root.context
-      val color = if (isActive) {
-        context.getColor(R.color.primary)
+      if (isActive) {
+        // 当前行: 白色 + 大字 + 粗体
+        binding.lyricLine.setTextColor(context.getColor(R.color.textPrimary))
+        binding.lyricLine.textSize = 24f
+        binding.lyricLine.setTypeface(null, Typeface.BOLD)
+        binding.lyricLine.alpha = 1f
       } else {
-        context.getColor(R.color.textTertiary)
+        // 其他行: 半透明白色 + 正常字体
+        binding.lyricLine.setTextColor(0x66FFFFFF.toInt())
+        binding.lyricLine.textSize = 20f
+        binding.lyricLine.setTypeface(null, Typeface.NORMAL)
+        binding.lyricLine.alpha = 0.6f
       }
-      binding.lyricLine.setTextColor(color)
-      binding.lyricLine.setTypeface(null, if (isActive) Typeface.BOLD else Typeface.NORMAL)
     }
   }
 }

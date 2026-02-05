@@ -1,164 +1,262 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:orientation="vertical"
-  android:background="@color/surface">
+  android:background="@drawable/bg_luminous_dark">
 
+  <!-- 环境光层 -->
+  <View
+    android:id="@+id/ambientOrb"
+    android:layout_width="500dp"
+    android:layout_height="500dp"
+    android:layout_gravity="start|top"
+    android:layout_marginStart="-200dp"
+    android:layout_marginTop="-150dp"
+    android:background="@drawable/bg_ambient_orb_blue"
+    android:alpha="0.15" />
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <!-- ========== 左侧: 大封面区 (35%) ========== -->
+    <LinearLayout
+      android:id="@+id/detailHeader"
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_weight="0.35"
+      android:orientation="vertical"
+      android:gravity="center"
+      android:padding="32dp">
+
+      <!-- 封面阴影 + 卡片 -->
+      <FrameLayout
+        android:layout_width="220dp"
+        android:layout_height="220dp">
+
+        <View
+          android:id="@+id/coverShadow"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_marginTop="16dp"
+          android:background="@drawable/bg_cover_shadow"
+          android:alpha="0.5" />
+
+        <com.google.android.material.card.MaterialCardView
+          android:id="@+id/detailCoverCard"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          app:cardCornerRadius="28dp"
+          app:cardElevation="20dp"
+          app:cardBackgroundColor="@color/surfaceAlt"
+          app:strokeWidth="0dp">
+
+          <ImageView
+            android:id="@+id/detailCover"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_launcher_foreground" />
+        </com.google.android.material.card.MaterialCardView>
+      </FrameLayout>
+
+      <!-- 标题 -->
+      <TextView
+        android:id="@+id/detailTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:textColor="@color/textPrimary"
+        android:textSize="24sp"
+        android:fontFamily="@font/barlow_bold"
+        android:letterSpacing="-0.03"
+        android:gravity="center"
+        android:maxLines="2"
+        android:ellipsize="end" />
+
+      <!-- 副标题 -->
+      <TextView
+        android:id="@+id/detailSubtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="#99FFFFFF"
+        android:textSize="16sp"
+        android:fontFamily="@font/barlow_medium"
+        android:gravity="center"
+        android:maxLines="1"
+        android:ellipsize="end" />
+
+      <!-- 操作按钮 -->
+      <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <!-- Play 按钮 -->
+        <com.google.android.material.button.MaterialButton
+          android:id="@+id/playAllButton"
+          android:layout_width="160dp"
+          android:layout_height="56dp"
+          android:text="@string/play"
+          style="@style/Widget.Yes.Button.Filled"
+          app:icon="@drawable/ic_play_24"
+          app:iconSize="22dp"
+          app:cornerRadius="28dp" />
+
+        <!-- Shuffle 按钮 -->
+        <com.google.android.material.button.MaterialButton
+          android:id="@+id/shuffleButton"
+          android:layout_width="56dp"
+          android:layout_height="56dp"
+          android:layout_marginStart="16dp"
+          android:contentDescription="@string/shuffle"
+          style="@style/Widget.Yes.Button.Outline"
+          app:icon="@drawable/ic_shuffle_24"
+          app:iconSize="22dp"
+          app:iconGravity="textStart"
+          app:iconPadding="0dp"
+          app:cornerRadius="28dp" />
+
+      </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- ========== 右侧: 歌曲列表区 (65%) ========== -->
+    <LinearLayout
+      android:id="@+id/listContainer"
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_weight="0.65"
+      android:orientation="vertical"
+      android:paddingTop="32dp"
+      android:paddingEnd="32dp"
+      android:paddingBottom="32dp">
+
+      <!-- 顶部工具栏 -->
+      <LinearLayout
+        android:id="@+id/detailToolbarContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="20dp">
+
+        <!-- 返回按钮 -->
+        <com.google.android.material.button.MaterialButton
+          android:id="@+id/backButton"
+          style="@style/Widget.Yes.IconButton"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
+          android:contentDescription="@string/previous"
+          app:icon="@drawable/ic_arrow_back_24"
+          app:iconTint="@color/textPrimary" />
+
+        <!-- 标题占位 -->
+        <TextView
+          android:id="@+id/toolbarTitle"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:layout_marginStart="16dp"
+          android:textColor="@color/textPrimary"
+          android:textSize="18sp"
+          android:fontFamily="@font/barlow_semibold"
+          android:letterSpacing="-0.02"
+          android:maxLines="1"
+          android:ellipsize="end"
+          android:alpha="0" />
+
+        <!-- 搜索按钮 -->
+        <com.google.android.material.button.MaterialButton
+          android:id="@+id/searchPillButton"
+          style="@style/Widget.Yes.IconButton"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
+          android:contentDescription="@string/search"
+          app:icon="@drawable/ic_search_24"
+          app:iconTint="#99FFFFFF" />
+
+      </LinearLayout>
+
+      <!-- 搜索展开区 (默认隐藏) -->
+      <FrameLayout
+        android:id="@+id/detailSearchCard"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone">
+
+        <View
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:background="@drawable/bg_bento_card" />
+
+        <EditText
+          android:id="@+id/detailSearchInput"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:background="@android:color/transparent"
+          android:hint="@string/detail_search_hint"
+          android:paddingStart="24dp"
+          android:paddingEnd="24dp"
+          android:textColor="@color/textPrimary"
+          android:textColorHint="#66FFFFFF"
+          android:textSize="16sp"
+          android:fontFamily="@font/barlow_regular"
+          android:imeOptions="actionSearch"
+          android:inputType="text" />
+      </FrameLayout>
+
+      <!-- 状态文字 -->
+      <TextView
+        android:id="@+id/detailStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="12dp"
+        android:textColor="#66FFFFFF"
+        android:textSize="14sp"
+        android:fontFamily="@font/barlow_regular"
+        android:visibility="gone" />
+
+      <!-- 呼吸感歌曲列表 -->
+      <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/detailList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:paddingBottom="16dp"
+        android:layoutAnimation="@anim/layout_animation_fall_down" />
+
+    </LinearLayout>
+
+  </LinearLayout>
+
+  <!-- 兼容旧版的隐藏元素 -->
   <com.google.android.material.appbar.MaterialToolbar
     android:id="@+id/detailToolbar"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/detail_toolbar_height"
-    android:background="@color/navBar"
-    android:paddingStart="@dimen/screen_padding"
-    android:paddingEnd="@dimen/screen_padding"
-    app:navigationIcon="@drawable/ic_arrow_back_24"
-    app:navigationIconTint="@color/textPrimary"
-    app:titleTextAppearance="@style/TextAppearance.YesToolbarTitle"
-    app:titleTextColor="@color/textPrimary" />
-
-  <androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/detailHeader"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingStart="@dimen/screen_padding"
-    android:paddingEnd="@dimen/screen_padding"
-    android:paddingTop="24dp"
-    android:paddingBottom="16dp">
-
-    <com.google.android.material.card.MaterialCardView
-      android:id="@+id/detailCoverCard"
-      android:layout_width="@dimen/detail_cover_size"
-      android:layout_height="@dimen/detail_cover_size"
-      app:cardCornerRadius="@dimen/cover_radius"
-      app:cardElevation="@dimen/card_elevation"
-      app:cardBackgroundColor="@color/surface"
-      app:strokeColor="@color/divider"
-      app:strokeWidth="1dp"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent">
-
-      <ImageView
-        android:id="@+id/detailCover"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:contentDescription="@string/app_name"
-        android:src="@drawable/ic_launcher_foreground" />
-    </com.google.android.material.card.MaterialCardView>
-
-    <TextView
-      android:id="@+id/detailTitle"
-      android:layout_width="0dp"
-      android:layout_height="wrap_content"
-      android:layout_marginStart="20dp"
-      android:textColor="@color/textPrimary"
-      android:textSize="@dimen/detail_title_size"
-      android:fontFamily="@font/barlow_semibold"
-      android:maxLines="2"
-      android:ellipsize="end"
-      app:layout_constraintStart_toEndOf="@id/detailCoverCard"
-      app:layout_constraintTop_toTopOf="@id/detailCoverCard"
-      app:layout_constraintEnd_toEndOf="parent" />
-
-    <TextView
-      android:id="@+id/detailSubtitle"
-      android:layout_width="0dp"
-      android:layout_height="wrap_content"
-      android:layout_marginStart="20dp"
-      android:layout_marginTop="8dp"
-      android:textColor="@color/textSecondary"
-      android:textSize="@dimen/detail_subtitle_size"
-      android:fontFamily="@font/barlow_regular"
-      android:maxLines="1"
-      android:ellipsize="end"
-      app:layout_constraintStart_toEndOf="@id/detailCoverCard"
-      app:layout_constraintTop_toBottomOf="@id/detailTitle"
-      app:layout_constraintEnd_toEndOf="parent" />
-
-    <com.google.android.material.button.MaterialButton
-      android:id="@+id/playAllButton"
-      android:layout_width="wrap_content"
-      android:layout_height="48dp"
-      android:layout_marginStart="20dp"
-      android:layout_marginTop="16dp"
-      android:text="@string/play_all"
-      style="@style/Widget.Yes.Button.Filled"
-      app:layout_constraintStart_toEndOf="@id/detailCoverCard"
-      app:layout_constraintTop_toBottomOf="@id/detailSubtitle" />
-
-  </androidx.constraintlayout.widget.ConstraintLayout>
-
-  <androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/detailActions"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingStart="@dimen/screen_padding"
-    android:paddingEnd="@dimen/screen_padding"
-    android:paddingBottom="8dp">
-
-    <com.google.android.material.card.MaterialCardView
-      android:id="@+id/detailSearchCard"
-      android:layout_width="0dp"
-      android:layout_height="@dimen/search_height"
-      style="@style/Widget.Yes.Card"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintEnd_toStartOf="@id/detailSortButton">
-
-      <EditText
-        android:id="@+id/detailSearchInput"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/transparent"
-        android:hint="@string/detail_search_hint"
-        android:paddingStart="@dimen/search_input_padding"
-        android:paddingEnd="@dimen/search_input_padding"
-        android:textColor="@color/textPrimary"
-        android:textColorHint="@color/textTertiary"
-        android:textSize="@dimen/track_title_size"
-        android:fontFamily="@font/barlow_regular"
-        android:imeOptions="actionSearch"
-        android:inputType="text" />
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.button.MaterialButton
-      android:id="@+id/detailSortButton"
-      android:layout_width="@dimen/search_button_width"
-      android:layout_height="@dimen/search_height"
-      android:layout_marginStart="16dp"
-      android:text="@string/sort_default"
-      style="@style/Widget.Yes.Button.Outline"
-      app:layout_constraintTop_toTopOf="@id/detailSearchCard"
-      app:layout_constraintBottom_toBottomOf="@id/detailSearchCard"
-      app:layout_constraintEnd_toEndOf="parent" />
-
-  </androidx.constraintlayout.widget.ConstraintLayout>
-
-  <TextView
-    android:id="@+id/detailStatus"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingStart="@dimen/screen_padding"
-    android:paddingEnd="@dimen/screen_padding"
-    android:paddingTop="12dp"
-    android:paddingBottom="12dp"
-    android:textColor="@color/textTertiary"
-    android:textSize="@dimen/detail_status_size"
-    android:fontFamily="@font/barlow_regular"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
     android:visibility="gone" />
 
-  <androidx.recyclerview.widget.RecyclerView
-    android:id="@+id/detailList"
-    android:layout_width="match_parent"
+  <com.google.android.material.button.MaterialButton
+    android:id="@+id/detailSortButton"
+    android:layout_width="0dp"
     android:layout_height="0dp"
-    android:layout_weight="1"
-    android:paddingStart="@dimen/screen_padding"
-    android:paddingEnd="@dimen/screen_padding"
-    android:clipToPadding="false"
-    android:overScrollMode="never"
-    android:paddingBottom="24dp" />
+    android:visibility="gone" />
 
-</LinearLayout>
+  <LinearLayout
+    android:id="@+id/detailActions"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:visibility="gone" />
+
+</FrameLayout>

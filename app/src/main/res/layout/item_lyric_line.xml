@@ -4,9 +4,10 @@
   android:id="@+id/lyricLine"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
-  android:paddingTop="@dimen/lyrics_line_padding"
-  android:paddingBottom="@dimen/lyrics_line_padding"
-  android:textColor="@color/textTertiary"
-  android:textSize="@dimen/lyrics_text_size"
-  android:fontFamily="@font/barlow_regular"
-  android:lineSpacingExtra="@dimen/lyrics_line_spacing" />
+  android:paddingTop="16dp"
+  android:paddingBottom="16dp"
+  android:textColor="#66FFFFFF"
+  android:textSize="20sp"
+  android:fontFamily="@font/barlow_medium"
+  android:letterSpacing="-0.02"
+  android:lineSpacingMultiplier="1.3" />

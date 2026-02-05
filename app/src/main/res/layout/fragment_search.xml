@@ -1,71 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<FrameLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:background="@color/surface"
-  android:padding="@dimen/screen_padding">
+  android:background="@drawable/bg_luminous_dark">
 
-  <com.google.android.material.card.MaterialCardView
-    android:id="@+id/searchContainer"
-    android:layout_width="0dp"
-    android:layout_height="@dimen/search_height"
-    style="@style/Widget.Yes.Card"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintEnd_toStartOf="@id/searchButton">
+  <!-- 环境光层 -->
+  <View
+    android:id="@+id/ambientOrb"
+    android:layout_width="450dp"
+    android:layout_height="450dp"
+    android:layout_gravity="start|bottom"
+    android:layout_marginStart="-180dp"
+    android:layout_marginBottom="-150dp"
+    android:background="@drawable/bg_ambient_orb_blue"
+    android:alpha="0.15" />
 
-    <EditText
-      android:id="@+id/searchInput"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:background="@android:color/transparent"
-      android:hint="@string/search_hint"
-      android:paddingStart="@dimen/search_input_padding"
-      android:paddingEnd="@dimen/search_input_padding"
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="32dp">
+
+    <!-- 标题 -->
+    <TextView
+      android:id="@+id/searchTitle"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/tab_search"
       android:textColor="@color/textPrimary"
-      android:textColorHint="@color/textTertiary"
-      android:textSize="@dimen/track_title_size"
+      android:textSize="28sp"
+      android:fontFamily="@font/barlow_bold"
+      android:letterSpacing="-0.03"
+      android:layout_marginBottom="24dp" />
+
+    <!-- 搜索框区域 -->
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      android:gravity="center_vertical"
+      android:layout_marginBottom="24dp">
+
+      <!-- 搜索框 -->
+      <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_weight="1"
+        android:layout_marginEnd="16dp">
+
+        <View
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:background="@drawable/bg_bento_card" />
+
+        <EditText
+          android:id="@+id/searchInput"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:background="@android:color/transparent"
+          android:hint="@string/search_hint"
+          android:paddingStart="24dp"
+          android:paddingEnd="24dp"
+          android:textColor="@color/textPrimary"
+          android:textColorHint="#66FFFFFF"
+          android:textSize="16sp"
+          android:fontFamily="@font/barlow_regular"
+          android:imeOptions="actionSearch"
+          android:inputType="text" />
+      </FrameLayout>
+
+      <!-- 搜索按钮 -->
+      <com.google.android.material.button.MaterialButton
+        android:id="@+id/searchButton"
+        android:layout_width="120dp"
+        android:layout_height="56dp"
+        android:text="@string/search"
+        style="@style/Widget.Yes.Button.Filled"
+        app:cornerRadius="28dp" />
+
+    </LinearLayout>
+
+    <!-- 搜索框卡片（隐藏，兼容旧代码） -->
+    <com.google.android.material.card.MaterialCardView
+      android:id="@+id/searchContainer"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:visibility="gone" />
+
+    <!-- 状态 -->
+    <TextView
+      android:id="@+id/searchStatus"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="16dp"
+      android:textColor="#66FFFFFF"
+      android:textSize="14sp"
       android:fontFamily="@font/barlow_regular"
-      android:imeOptions="actionSearch"
-      android:inputType="text" />
-  </com.google.android.material.card.MaterialCardView>
+      android:visibility="gone" />
 
-  <com.google.android.material.button.MaterialButton
-    android:id="@+id/searchButton"
-    android:layout_width="@dimen/search_button_width"
-    android:layout_height="@dimen/search_height"
-    android:layout_marginStart="16dp"
-    android:text="@string/search"
-    style="@style/Widget.Yes.Button.Filled"
-    app:layout_constraintTop_toTopOf="@id/searchContainer"
-    app:layout_constraintBottom_toBottomOf="@id/searchContainer"
-    app:layout_constraintEnd_toEndOf="parent" />
+    <!-- 搜索结果列表 -->
+    <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/resultsList"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1"
+      android:clipToPadding="false"
+      android:overScrollMode="never"
+      android:layoutAnimation="@anim/layout_animation_fall_down" />
 
-  <TextView
-    android:id="@+id/searchStatus"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/search_status_margin_top"
-    android:textColor="@color/textTertiary"
-    android:textSize="@dimen/search_status_size"
-    android:fontFamily="@font/barlow_regular"
-    android:visibility="gone"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/searchContainer"
-    app:layout_constraintEnd_toEndOf="parent" />
+    <!-- 空状态 -->
+    <LinearLayout
+      android:id="@+id/searchEmptyContainer"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1"
+      android:orientation="vertical"
+      android:gravity="center"
+      android:visibility="gone">
 
-  <androidx.recyclerview.widget.RecyclerView
-    android:id="@+id/resultsList"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:layout_marginTop="16dp"
-    android:clipToPadding="false"
-    android:overScrollMode="never"
-    app:layout_constraintTop_toBottomOf="@id/searchStatus"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent" />
+      <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/ic_search_24"
+        android:alpha="0.2"
+        app:tint="#FFFFFF"
+        android:contentDescription="@string/search" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="搜索您喜欢的音乐"
+        android:textColor="#66FFFFFF"
+        android:textSize="16sp"
+        android:fontFamily="@font/barlow_regular" />
+
+    </LinearLayout>
+
+  </LinearLayout>
+
+</FrameLayout>

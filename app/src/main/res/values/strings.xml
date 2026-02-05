@@ -15,9 +15,14 @@
   <string name="unplayable">无法播放此歌曲</string>
   <string name="playing">正在播放</string>
   <string name="tab_home">首页</string>
+  <string name="tab_recommend">推荐</string>
   <string name="tab_search">搜索</string>
   <string name="tab_player">播放</string>
   <string name="tab_queue">队列</string>
+  <string name="section_highquality">精品歌单</string>
+  <string name="section_hot_playlists">热门歌单</string>
+  <string name="search_songs">歌曲</string>
+  <string name="search_playlists">歌单</string>
   <string name="queue_empty">播放队列为空</string>
   <string name="section_recommend">推荐歌单</string>
   <string name="section_for_you">For You</string>

@@ -446,6 +446,103 @@ class ApiEnhancedProvider(
     }
   }
 
+  // ========== 推荐/热门接口实现 ==========
+
+  override suspend fun getTopPlaylists(limit: Int, order: String, cat: String): List<CoverItem> {
+    return withContext(Dispatchers.IO) {
+      val encodedCat = URLEncoder.encode(cat, StandardCharsets.UTF_8.toString())
+      val url = "$baseUrl/top/playlist?limit=$limit&order=$order&cat=$encodedCat"
+      val response = client.newCall(buildRequest(url)).execute()
+      response.use { resp ->
+        if (!resp.isSuccessful) return@withContext emptyList()
+        val body = resp.body?.string() ?: return@withContext emptyList()
+        val root = JsonParser.parseString(body).asJsonObject
+        val playlists = root.arr("playlists") ?: return@withContext emptyList()
+        playlists.mapNotNull { item ->
+          val obj = item.asJsonObject
+          val id = obj.long("id") ?: return@mapNotNull null
+          val playCount = obj.get("playCount")?.asLong ?: 0L
+          val playCountStr = when {
+            playCount >= 100000000 -> "${playCount / 100000000}亿"
+            playCount >= 10000 -> "${playCount / 10000}万"
+            else -> playCount.toString()
+          }
+          CoverItem(
+            id = id,
+            title = obj.str("name") ?: "",
+            subtitle = "$playCountStr 播放",
+            coverUrl = obj.str("coverImgUrl")
+          )
+        }
+      }
+    }
+  }
+
+  override suspend fun getHighqualityPlaylists(limit: Int, cat: String): List<CoverItem> {
+    return withContext(Dispatchers.IO) {
+      val encodedCat = URLEncoder.encode(cat, StandardCharsets.UTF_8.toString())
+      val url = "$baseUrl/top/playlist/highquality?limit=$limit&cat=$encodedCat"
+      val response = client.newCall(buildRequest(url)).execute()
+      response.use { resp ->
+        if (!resp.isSuccessful) return@withContext emptyList()
+        val body = resp.body?.string() ?: return@withContext emptyList()
+        val root = JsonParser.parseString(body).asJsonObject
+        val playlists = root.arr("playlists") ?: return@withContext emptyList()
+        playlists.mapNotNull { item ->
+          val obj = item.asJsonObject
+          val id = obj.long("id") ?: return@mapNotNull null
+          CoverItem(
+            id = id,
+            title = obj.str("name") ?: "",
+            subtitle = obj.str("copywriter") ?: "${obj.get("trackCount")?.asInt ?: 0}首歌",
+            coverUrl = obj.str("coverImgUrl")
+          )
+        }
+      }
+    }
+  }
+
+  override suspend fun getPlaylistHotTags(): List<String> {
+    return withContext(Dispatchers.IO) {
+      val url = "$baseUrl/playlist/hot"
+      val response = client.newCall(buildRequest(url)).execute()
+      response.use { resp ->
+        if (!resp.isSuccessful) return@withContext emptyList()
+        val body = resp.body?.string() ?: return@withContext emptyList()
+        val root = JsonParser.parseString(body).asJsonObject
+        val tags = root.arr("tags") ?: return@withContext emptyList()
+        tags.mapNotNull { item ->
+          item.asJsonObject.str("name")
+        }
+      }
+    }
+  }
+
+  override suspend fun searchPlaylists(keyword: String, limit: Int): List<CoverItem> {
+    return withContext(Dispatchers.IO) {
+      val encoded = URLEncoder.encode(keyword, StandardCharsets.UTF_8.toString())
+      val url = "$baseUrl/cloudsearch?keywords=$encoded&type=1000&limit=$limit"
+      val response = client.newCall(buildRequest(url)).execute()
+      response.use { resp ->
+        if (!resp.isSuccessful) return@withContext emptyList()
+        val body = resp.body?.string() ?: return@withContext emptyList()
+        val root = JsonParser.parseString(body).asJsonObject
+        val result = root.obj("result") ?: return@withContext emptyList()
+        val playlists = result.arr("playlists") ?: return@withContext emptyList()
+        playlists.mapNotNull { item ->
+          val obj = item.asJsonObject
+          val id = obj.long("id") ?: return@mapNotNull null
+          CoverItem(
+            id = id,
+            title = obj.str("name") ?: "",
+            subtitle = "${obj.get("trackCount")?.asInt ?: 0}首歌",
+            coverUrl = obj.str("coverImgUrl")
+          )
+        }
+      }
+    }
+  }
+
   companion object {
     const val DEFAULT_BASE_URL = "https://daidaiyuplay.daidaiyu.me"
   }

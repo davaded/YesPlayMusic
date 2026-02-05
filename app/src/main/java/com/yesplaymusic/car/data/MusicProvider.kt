@@ -43,4 +43,20 @@ interface MusicProvider {
 
   /** 获取用户歌单列表 */
   suspend fun getUserPlaylists(userId: Long): List<CoverItem> = emptyList()
+
+  // ========== 推荐/热门接口 ==========
+
+  /** 热门歌单 */
+  suspend fun getTopPlaylists(limit: Int = 20, order: String = "hot", cat: String = "全部"): List<CoverItem> = emptyList()
+
+  /** 精品歌单 */
+  suspend fun getHighqualityPlaylists(limit: Int = 20, cat: String = "全部"): List<CoverItem> = emptyList()
+
+  /** 热门歌单分类标签 */
+  suspend fun getPlaylistHotTags(): List<String> = emptyList()
+
+  // ========== 搜索接口 ==========
+
+  /** 搜索歌单 */
+  suspend fun searchPlaylists(keyword: String, limit: Int = 20): List<CoverItem> = emptyList()
 }

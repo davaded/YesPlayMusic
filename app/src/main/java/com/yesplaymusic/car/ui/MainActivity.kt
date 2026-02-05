@@ -89,23 +89,24 @@ class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavig
 
     val pagerAdapter = MainPagerAdapter(this)
     binding.viewPager.adapter = pagerAdapter
-    binding.viewPager.offscreenPageLimit = 4
+    binding.viewPager.offscreenPageLimit = 5
     TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
       tab.text = when (position) {
         0 -> getString(R.string.tab_home)
-        1 -> getString(R.string.tab_search)
-        2 -> getString(R.string.tab_player)
-        3 -> getString(R.string.tab_queue)
+        1 -> getString(R.string.tab_recommend)
+        2 -> getString(R.string.tab_search)
+        3 -> getString(R.string.tab_player)
+        4 -> getString(R.string.tab_queue)
         else -> ""
       }
     }.attach()
 
     binding.searchShortcut.setOnClickListener {
-      binding.viewPager.currentItem = 1
+      binding.viewPager.currentItem = 2
     }
 
     binding.miniPlayerBar.setOnClickListener {
-      binding.viewPager.currentItem = 2
+      binding.viewPager.currentItem = 3
     }
     binding.miniPlayButton.setOnClickListener { togglePlay() }
     binding.miniNextButton.setOnClickListener { skipNext() }

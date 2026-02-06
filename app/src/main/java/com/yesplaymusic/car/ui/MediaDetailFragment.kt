@@ -112,8 +112,8 @@ class MediaDetailFragment : Fragment() {
   }
 
   private fun loadDetail(type: MediaType, id: Long, adapter: TrackListAdapter) {
-    binding.detailStatus.visibility = View.VISIBLE
-    binding.detailStatus.text = getString(R.string.detail_loading)
+    binding.detailLoading.visibility = View.VISIBLE
+    binding.detailStatus.visibility = View.GONE
     binding.detailList.visibility = View.GONE
     binding.playAllButton.isEnabled = false
 
@@ -134,6 +134,7 @@ class MediaDetailFragment : Fragment() {
   }
 
   private fun applyDetail(detail: MediaDetail, adapter: TrackListAdapter) {
+    binding.detailLoading.visibility = View.GONE
     bindHeader(detail.title, detail.subtitle, detail.coverUrl)
     allTracks.clear()
     allTracks.addAll(detail.tracks)
@@ -151,6 +152,7 @@ class MediaDetailFragment : Fragment() {
   }
 
   private fun showError() {
+    binding.detailLoading.visibility = View.GONE
     binding.detailStatus.visibility = View.VISIBLE
     binding.detailStatus.text = getString(R.string.detail_failed)
     binding.detailList.visibility = View.GONE

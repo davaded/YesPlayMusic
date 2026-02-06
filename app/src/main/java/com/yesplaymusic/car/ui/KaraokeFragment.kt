@@ -35,22 +35,27 @@ class KaraokeFragment : Fragment() {
   private var lyrics: List<LyricLine> = emptyList()
   private var lastLyricIndex = -1
   private var lyricsJob: Job? = null
-
-  // 麦克风处理器
   private var micProcessor: MicrophoneProcessor? = null
 
-  // 权限请求
   private val permissionLauncher = registerForActivityResult(
     ActivityResultContracts.RequestPermission()
   ) { granted ->
     if (granted) {
       startMicrophone()
     } else {
-      Toast.makeText(requireContext(), getString(R.string.mic_permission_denied), Toast.LENGTH_SHORT).show()
+      Toast.makeText(
+        requireContext(),
+        getString(R.string.mic_permission_denied),
+        Toast.LENGTH_SHORT
+      ).show()
     }
   }
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View {
     _binding = FragmentKaraokeBinding.inflate(inflater, container, false)
     return binding.root
   }
@@ -58,15 +63,13 @@ class KaraokeFragment : Fragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    // 退出按钮
     binding.exitButton.setOnClickListener {
       parentFragmentManager.popBackStack()
     }
 
-    // 请求麦克风权限并启动
+    setupMicGainControls()
     checkAndRequestMicPermission()
 
-    // 播放控制
     binding.playButton.setOnClickListener {
       (activity as? PlaybackHost)?.togglePlay()
     }
@@ -77,43 +80,43 @@ class KaraokeFragment : Fragment() {
       (activity as? PlaybackHost)?.skipNext()
     }
 
-    // 进度条拖动
     binding.seekBar.addOnChangeListener { _, value, fromUser ->
       if (fromUser) {
         (activity as? PlaybackHost)?.seekTo(value.toLong())
       }
     }
 
-    // 观察当前歌曲
     viewModel.currentTrack.observe(viewLifecycleOwner) { track ->
       loadBlurBackground(track?.coverUrl)
       loadLyrics(track?.id ?: 0L)
     }
 
-    // 观察播放位置
     viewModel.positionMs.observe(viewLifecycleOwner) { position ->
       updateLyricDisplay(position)
-      // 更新进度条
       if (!binding.seekBar.isPressed) {
         binding.seekBar.value = position.toFloat()
           .coerceAtLeast(0f)
           .coerceAtMost(binding.seekBar.valueTo)
       }
-      // 更新时间显示
       updateTimeDisplay(position, viewModel.durationMs.value ?: 0L)
     }
 
-    // 观察播放时长
     viewModel.durationMs.observe(viewLifecycleOwner) { duration ->
-      val max = duration.coerceAtLeast(1L).toFloat()
-      binding.seekBar.valueTo = max
+      binding.seekBar.valueTo = duration.coerceAtLeast(1L).toFloat()
     }
 
-    // 观察播放状态
     viewModel.isPlaying.observe(viewLifecycleOwner) { isPlaying ->
       binding.playButton.setIconResource(
         if (isPlaying) R.drawable.ic_pause_24 else R.drawable.ic_play_24
       )
+    }
+  }
+
+  private fun setupMicGainControls() {
+    binding.micGainValue.text = getString(R.string.mic_gain_value, binding.micGainSlider.value)
+    binding.micGainSlider.addOnChangeListener { _, value, _ ->
+      binding.micGainValue.text = getString(R.string.mic_gain_value, value)
+      micProcessor?.setMicGain(value)
     }
   }
 
@@ -129,7 +132,7 @@ class KaraokeFragment : Fragment() {
     lyricsJob?.cancel()
     lyrics = emptyList()
     lastLyricIndex = -1
-    binding.lyricCurrent.text = "♪"
+    binding.lyricCurrent.text = "-"
     binding.lyricPrev.text = ""
     binding.lyricNext.text = ""
 
@@ -151,12 +154,10 @@ class KaraokeFragment : Fragment() {
     val index = findLyricIndex(lyrics, positionMs)
     if (index != lastLyricIndex) {
       lastLyricIndex = index
-
       val prev = lyrics.getOrNull(index - 1)?.text ?: ""
-      val current = lyrics.getOrNull(index)?.text ?: "♪"
+      val current = lyrics.getOrNull(index)?.text ?: "-"
       val next = lyrics.getOrNull(index + 1)?.text ?: ""
 
-      // 带淡入淡出动画更新歌词
       binding.lyricCurrent.animate()
         .alpha(0f)
         .setDuration(150)
@@ -208,7 +209,6 @@ class KaraokeFragment : Fragment() {
   override fun onDestroyView() {
     super.onDestroyView()
     lyricsJob?.cancel()
-    // 释放麦克风资源
     micProcessor?.release()
     micProcessor = null
     _binding = null
@@ -216,13 +216,12 @@ class KaraokeFragment : Fragment() {
 
   private fun checkAndRequestMicPermission() {
     when {
-      ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO)
-        == PackageManager.PERMISSION_GRANTED -> {
+      ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) ==
+        PackageManager.PERMISSION_GRANTED -> {
         startMicrophone()
       }
-      else -> {
-        permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-      }
+
+      else -> permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
     }
   }
 
@@ -230,6 +229,7 @@ class KaraokeFragment : Fragment() {
     if (micProcessor == null) {
       micProcessor = MicrophoneProcessor()
     }
+    micProcessor?.setMicGain(binding.micGainSlider.value)
     val success = micProcessor?.start() ?: false
     if (success) {
       Toast.makeText(requireContext(), getString(R.string.mic_enabled), Toast.LENGTH_SHORT).show()

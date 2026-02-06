@@ -8,8 +8,7 @@ import android.media.MediaRecorder
 import android.util.Log
 
 /**
- * 实时音频处理器 - 麦克风采集并实时播放
- * 实现 KTV 效果：用户唱歌 → 麦克风采集 → 实时从扬声器播放
+ * Real-time microphone loopback for karaoke mode.
  */
 class MicrophoneProcessor {
 
@@ -19,30 +18,32 @@ class MicrophoneProcessor {
     private const val CHANNEL_IN = AudioFormat.CHANNEL_IN_MONO
     private const val CHANNEL_OUT = AudioFormat.CHANNEL_OUT_MONO
     private const val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT
+
+    private const val DEFAULT_MIC_GAIN = 2.2f
+    private const val MIN_MIC_GAIN = 1.0f
+    private const val MAX_MIC_GAIN = 6.0f
   }
 
   private var audioRecord: AudioRecord? = null
   private var audioTrack: AudioTrack? = null
+  @Volatile
   private var isRunning = false
   private var processingThread: Thread? = null
+  @Volatile
+  private var micGain: Float = DEFAULT_MIC_GAIN
 
   private val minBufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_IN, AUDIO_FORMAT)
     .takeIf { it > 0 }
     ?: run {
-      // 部分设备会返回错误码，回退到 100ms 缓冲避免崩溃
       val fallback = SAMPLE_RATE / 10
-      Log.w(TAG, "getMinBufferSize 返回非法值，使用回退缓冲: $fallback")
+      Log.w(TAG, "Invalid min buffer size, fallback to: $fallback")
       fallback
     }
 
-  /**
-   * 开始实时音频处理
-   */
   fun start(): Boolean {
     if (isRunning) return true
 
     try {
-      // 创建录音器
       audioRecord = AudioRecord(
         MediaRecorder.AudioSource.MIC,
         SAMPLE_RATE,
@@ -52,12 +53,11 @@ class MicrophoneProcessor {
       )
 
       if (audioRecord?.state != AudioRecord.STATE_INITIALIZED) {
-        Log.e(TAG, "AudioRecord 初始化失败")
+        Log.e(TAG, "AudioRecord init failed")
         release()
         return false
       }
 
-      // 创建播放器
       audioTrack = AudioTrack(
         AudioManager.STREAM_MUSIC,
         SAMPLE_RATE,
@@ -68,7 +68,7 @@ class MicrophoneProcessor {
       )
 
       if (audioTrack?.state != AudioTrack.STATE_INITIALIZED) {
-        Log.e(TAG, "AudioTrack 初始化失败")
+        Log.e(TAG, "AudioTrack init failed")
         release()
         return false
       }
@@ -77,13 +77,14 @@ class MicrophoneProcessor {
       audioRecord?.startRecording()
       audioTrack?.play()
 
-      // 启动处理线程
       processingThread = Thread {
-        val buffer = ShortArray(minBufferSize)
+        val inputBuffer = ShortArray(minBufferSize)
+        val outputBuffer = ShortArray(minBufferSize)
         while (isRunning) {
-          val readCount = audioRecord?.read(buffer, 0, buffer.size) ?: 0
+          val readCount = audioRecord?.read(inputBuffer, 0, inputBuffer.size) ?: 0
           if (readCount > 0) {
-            audioTrack?.write(buffer, 0, readCount)
+            applyGain(inputBuffer, outputBuffer, readCount, micGain)
+            audioTrack?.write(outputBuffer, 0, readCount)
           }
         }
       }.apply {
@@ -91,23 +92,19 @@ class MicrophoneProcessor {
         start()
       }
 
-      Log.i(TAG, "麦克风实时处理已启动")
+      Log.i(TAG, "Microphone processor started")
       return true
-
     } catch (e: SecurityException) {
-      Log.e(TAG, "没有录音权限", e)
+      Log.e(TAG, "No record audio permission", e)
       release()
       return false
     } catch (e: Exception) {
-      Log.e(TAG, "启动失败", e)
+      Log.e(TAG, "Start failed", e)
       release()
       return false
     }
   }
 
-  /**
-   * 停止实时音频处理
-   */
   fun stop() {
     isRunning = false
     processingThread?.interrupt()
@@ -117,26 +114,35 @@ class MicrophoneProcessor {
       audioRecord?.stop()
       audioTrack?.stop()
     } catch (e: Exception) {
-      Log.w(TAG, "停止时出错", e)
+      Log.w(TAG, "Stop failed", e)
     }
 
-    Log.i(TAG, "麦克风实时处理已停止")
+    Log.i(TAG, "Microphone processor stopped")
   }
 
-  /**
-   * 释放资源
-   */
   fun release() {
     stop()
     audioRecord?.release()
     audioTrack?.release()
     audioRecord = null
     audioTrack = null
-    Log.i(TAG, "资源已释放")
+    Log.i(TAG, "Microphone resources released")
   }
 
-  /**
-   * 是否正在运行
-   */
   fun isRunning(): Boolean = isRunning
+
+  fun setMicGain(gain: Float) {
+    micGain = gain.coerceIn(MIN_MIC_GAIN, MAX_MIC_GAIN)
+  }
+
+  fun getMicGain(): Float = micGain
+
+  private fun applyGain(input: ShortArray, output: ShortArray, count: Int, gain: Float) {
+    for (i in 0 until count) {
+      val amplified = (input[i] * gain).toInt()
+      output[i] = amplified
+        .coerceIn(Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt())
+        .toShort()
+    }
+  }
 }

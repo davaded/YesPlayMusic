@@ -92,4 +92,6 @@
   <string name="login_success">登录成功</string>
   <string name="login_skip">跳过登录，以游客身份浏览</string>
   <string name="login_failed">登录失败，请重试</string>
+  <string name="mic_gain_label">Mic</string>
+  <string name="mic_gain_value">x%.1f</string>
 </resources>

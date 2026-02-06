@@ -53,6 +53,13 @@ class QueueAdapter(
       }
       binding.trackTitle.setTextColor(color)
       binding.trackTitle.setTypeface(null, if (isCurrent) Typeface.BOLD else Typeface.NORMAL)
+      // 当前播放项显示暂停图标，其他显示播放图标
+      val iconRes = if (isCurrent) {
+        com.yesplaymusic.car.R.drawable.ic_pause_24
+      } else {
+        com.yesplaymusic.car.R.drawable.ic_play_24
+      }
+      binding.playItemButton.setIconResource(iconRes)
       binding.playItemButton.setOnClickListener { onPlay(index) }
       binding.root.setOnClickListener { onPlay(index) }
     }

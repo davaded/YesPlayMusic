@@ -53,11 +53,6 @@ class QueueAdapter(
       }
       binding.trackTitle.setTextColor(color)
       binding.trackTitle.setTypeface(null, if (isCurrent) Typeface.BOLD else Typeface.NORMAL)
-      binding.playItemButton.text = if (isCurrent) {
-        binding.root.context.getString(com.yesplaymusic.car.R.string.playing)
-      } else {
-        binding.root.context.getString(com.yesplaymusic.car.R.string.play)
-      }
       binding.playItemButton.setOnClickListener { onPlay(index) }
       binding.root.setOnClickListener { onPlay(index) }
     }

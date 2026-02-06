@@ -48,7 +48,6 @@ class TrackListAdapter(
         placeholder(R.drawable.ic_launcher_foreground)
         error(R.drawable.ic_launcher_foreground)
       }
-      binding.playItemButton.text = binding.root.context.getString(R.string.play)
       binding.playItemButton.setOnClickListener { onPlay(index) }
       binding.root.setOnClickListener { onPlay(index) }
     }

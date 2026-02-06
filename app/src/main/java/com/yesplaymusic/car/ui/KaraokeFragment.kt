@@ -1,14 +1,20 @@
 package com.yesplaymusic.car.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import com.yesplaymusic.car.R
+import com.yesplaymusic.car.audio.MicrophoneProcessor
 import com.yesplaymusic.car.data.LyricLine
 import com.yesplaymusic.car.data.ProviderRegistry
 import com.yesplaymusic.car.databinding.FragmentKaraokeBinding
@@ -30,6 +36,20 @@ class KaraokeFragment : Fragment() {
   private var lastLyricIndex = -1
   private var lyricsJob: Job? = null
 
+  // 麦克风处理器
+  private var micProcessor: MicrophoneProcessor? = null
+
+  // 权限请求
+  private val permissionLauncher = registerForActivityResult(
+    ActivityResultContracts.RequestPermission()
+  ) { granted ->
+    if (granted) {
+      startMicrophone()
+    } else {
+      Toast.makeText(requireContext(), getString(R.string.mic_permission_denied), Toast.LENGTH_SHORT).show()
+    }
+  }
+
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
     _binding = FragmentKaraokeBinding.inflate(inflater, container, false)
     return binding.root
@@ -42,6 +62,9 @@ class KaraokeFragment : Fragment() {
     binding.exitButton.setOnClickListener {
       parentFragmentManager.popBackStack()
     }
+
+    // 请求麦克风权限并启动
+    checkAndRequestMicPermission()
 
     // 播放控制
     binding.playButton.setOnClickListener {
@@ -185,6 +208,31 @@ class KaraokeFragment : Fragment() {
   override fun onDestroyView() {
     super.onDestroyView()
     lyricsJob?.cancel()
+    // 释放麦克风资源
+    micProcessor?.release()
+    micProcessor = null
     _binding = null
+  }
+
+  private fun checkAndRequestMicPermission() {
+    when {
+      ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO)
+        == PackageManager.PERMISSION_GRANTED -> {
+        startMicrophone()
+      }
+      else -> {
+        permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+      }
+    }
+  }
+
+  private fun startMicrophone() {
+    if (micProcessor == null) {
+      micProcessor = MicrophoneProcessor()
+    }
+    val success = micProcessor?.start() ?: false
+    if (success) {
+      Toast.makeText(requireContext(), getString(R.string.mic_enabled), Toast.LENGTH_SHORT).show()
+    }
   }
 }

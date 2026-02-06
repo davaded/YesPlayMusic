@@ -119,16 +119,17 @@
             android:orientation="horizontal"
             android:gravity="center">
 
-            <!-- Play 按钮 - 主按钮反色 -->
+            <!-- Play 按钮 - 纯图标圆形按钮 -->
             <com.google.android.material.button.MaterialButton
               android:id="@+id/playAllButton"
               style="@style/Widget.Yes.RoundButton.Inverted"
-              android:layout_width="140dp"
+              android:layout_width="52dp"
               android:layout_height="52dp"
-              android:text="@string/play"
-              android:textColor="@color/background"
+              android:contentDescription="@string/play"
               app:icon="@drawable/ic_play_24"
-              app:iconSize="20dp"
+              app:iconSize="24dp"
+              app:iconGravity="textStart"
+              app:iconPadding="0dp"
               app:iconTint="@color/background"
               app:cornerRadius="26dp" />
 

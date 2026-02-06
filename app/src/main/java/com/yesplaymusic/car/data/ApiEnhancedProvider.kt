@@ -66,13 +66,31 @@ class ApiEnhancedProvider(
     return builder.build()
   }
 
-  private fun executeRequest(request: Request, callClient: OkHttpClient = client): Response? {
-    return try {
-      callClient.newCall(request).execute()
-    } catch (e: Exception) {
-      android.util.Log.e("ApiProvider", "请求失败: ${request.url}", e)
-      null
+  private fun executeRequest(
+    request: Request,
+    callClient: OkHttpClient = client,
+    maxRetries: Int = 0
+  ): Response? {
+    var attempt = 0
+    while (attempt <= maxRetries) {
+      try {
+        return callClient.newCall(request).execute()
+      } catch (e: Exception) {
+        val willRetry = attempt < maxRetries
+        if (willRetry) {
+          android.util.Log.w(
+            "ApiProvider",
+            "请求失败，准备重试: ${request.url}, attempt=${attempt + 1}/${maxRetries + 1}",
+            e
+          )
+        } else {
+          android.util.Log.e("ApiProvider", "请求失败: ${request.url}", e)
+          return null
+        }
+      }
+      attempt++
     }
+    return null
   }
 
   override suspend fun search(keyword: String, limit: Int): List<Track> {
@@ -105,42 +123,31 @@ class ApiEnhancedProvider(
 
   override suspend fun resolveStream(trackId: Long): StreamResource {
     return withContext(Dispatchers.IO) {
-      val normal = resolveSongUrl(trackId)
+      val normal = resolveSongUrlV1(trackId, unblock = false)
       if (normal.url.isNotBlank()) return@withContext normal
 
       val availability = checkMusicAvailability(trackId)
       if (availability?.success == false) {
-        android.util.Log.w("ApiProvider", "歌曲不可用，尝试解灰: id=$trackId, message=${availability.message}")
-      }
-
-      val matched = resolveMatchedSongUrl(trackId)
-      if (matched.url.isNotBlank()) {
-        if (availability?.success == false && !availability.message.isNullOrBlank()) {
-          return@withContext matched.copy(message = availability.message)
+        android.util.Log.w("ApiProvider", "歌曲不可用，尝试 v1 解锁: id=$trackId, message=${availability.message}")
+        val unlocked = resolveSongUrlV1(trackId, unblock = true)
+        if (unlocked.url.isNotBlank()) {
+          return@withContext unlocked.copy(message = availability.message)
         }
-        return@withContext matched
+        val finalMessage = if (!availability.message.isNullOrBlank()) {
+          "${availability.message}，解锁失败"
+        } else {
+          "当前歌曲暂无可用音源"
+        }
+        return@withContext StreamResource(url = "", message = finalMessage)
       }
 
-      if (availability?.success == false && !availability.message.isNullOrBlank()) {
-        return@withContext StreamResource(url = "", message = availability.message)
-      }
-      StreamResource(url = "")
+      StreamResource(url = "", message = "当前歌曲不可播放")
     }
   }
 
-  private fun resolveSongUrl(trackId: Long): StreamResource {
-    val url = "$baseUrl/song/url?id=$trackId&br=320000"
-    val response = executeRequest(buildRequest(url), streamClient) ?: return StreamResource(url = "")
-    response.use { resp ->
-      if (!resp.isSuccessful) return StreamResource(url = "")
-      val body = resp.body?.string() ?: return StreamResource(url = "")
-      return parseStreamResponse(body)
-    }
-  }
-
-  private fun resolveMatchedSongUrl(trackId: Long): StreamResource {
-    val url = "$baseUrl/song/url/match?id=$trackId"
-    val response = executeRequest(buildRequest(url), streamClient) ?: return StreamResource(url = "")
+  private fun resolveSongUrlV1(trackId: Long, unblock: Boolean): StreamResource {
+    val url = "$baseUrl/song/url/v1?id=$trackId&level=lossless&unblock=$unblock"
+    val response = executeRequest(buildRequest(url), streamClient, maxRetries = 1) ?: return StreamResource(url = "")
     response.use { resp ->
       if (!resp.isSuccessful) return StreamResource(url = "")
       val body = resp.body?.string() ?: return StreamResource(url = "")
@@ -167,7 +174,7 @@ class ApiEnhancedProvider(
 
   private fun checkMusicAvailability(trackId: Long): MusicAvailability? {
     val url = "$baseUrl/check/music?id=$trackId&br=320000"
-    val response = executeRequest(buildRequest(url), streamClient) ?: return null
+    val response = executeRequest(buildRequest(url), streamClient, maxRetries = 1) ?: return null
     response.use { resp ->
       if (!resp.isSuccessful) return null
       val body = resp.body?.string() ?: return null

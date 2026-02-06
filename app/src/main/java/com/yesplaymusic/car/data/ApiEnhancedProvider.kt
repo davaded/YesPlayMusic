@@ -21,6 +21,11 @@ class ApiEnhancedProvider(
     .build()
 ) : MusicProvider {
 
+  private data class MusicAvailability(
+    val success: Boolean?,
+    val message: String?
+  )
+
   private val streamClient: OkHttpClient = client.newBuilder()
     .callTimeout(15, TimeUnit.SECONDS)
     .build()
@@ -100,16 +105,83 @@ class ApiEnhancedProvider(
 
   override suspend fun resolveStream(trackId: Long): StreamResource {
     return withContext(Dispatchers.IO) {
-      val url = "$baseUrl/song/url?id=$trackId&br=320000"
-      val response = executeRequest(buildRequest(url), streamClient) ?: return@withContext StreamResource(url = "")
-      response.use { resp ->
-        if (!resp.isSuccessful) return@withContext StreamResource(url = "")
-        val body = resp.body?.string() ?: return@withContext StreamResource(url = "")
+      val normal = resolveSongUrl(trackId)
+      if (normal.url.isNotBlank()) return@withContext normal
+
+      val availability = checkMusicAvailability(trackId)
+      if (availability?.success == false) {
+        android.util.Log.w("ApiProvider", "歌曲不可用，尝试解灰: id=$trackId, message=${availability.message}")
+      }
+
+      val matched = resolveMatchedSongUrl(trackId)
+      if (matched.url.isNotBlank()) {
+        if (availability?.success == false && !availability.message.isNullOrBlank()) {
+          return@withContext matched.copy(message = availability.message)
+        }
+        return@withContext matched
+      }
+
+      if (availability?.success == false && !availability.message.isNullOrBlank()) {
+        return@withContext StreamResource(url = "", message = availability.message)
+      }
+      StreamResource(url = "")
+    }
+  }
+
+  private fun resolveSongUrl(trackId: Long): StreamResource {
+    val url = "$baseUrl/song/url?id=$trackId&br=320000"
+    val response = executeRequest(buildRequest(url), streamClient) ?: return StreamResource(url = "")
+    response.use { resp ->
+      if (!resp.isSuccessful) return StreamResource(url = "")
+      val body = resp.body?.string() ?: return StreamResource(url = "")
+      return parseStreamResponse(body)
+    }
+  }
+
+  private fun resolveMatchedSongUrl(trackId: Long): StreamResource {
+    val url = "$baseUrl/song/url/match?id=$trackId"
+    val response = executeRequest(buildRequest(url), streamClient) ?: return StreamResource(url = "")
+    response.use { resp ->
+      if (!resp.isSuccessful) return StreamResource(url = "")
+      val body = resp.body?.string() ?: return StreamResource(url = "")
+      return parseStreamResponse(body)
+    }
+  }
+
+  private fun parseStreamResponse(body: String): StreamResource {
+    return try {
+      val root = JsonParser.parseString(body).asJsonObject
+      val first = root.arr("data")?.firstOrNull()?.asJsonObject
+        ?: root.obj("data")
+        ?: root.obj("result")
+      val streamUrl = first?.str("url") ?: root.str("url").orEmpty()
+      val expires = first?.long("expires")?.let { it * 1000L }
+        ?: first?.long("expi")?.let { it * 1000L }
+      val message = root.str("message")
+      StreamResource(url = streamUrl, expiresAtMs = expires, message = message)
+    } catch (e: Exception) {
+      android.util.Log.e("ApiProvider", "解析播放地址响应失败", e)
+      StreamResource(url = "")
+    }
+  }
+
+  private fun checkMusicAvailability(trackId: Long): MusicAvailability? {
+    val url = "$baseUrl/check/music?id=$trackId&br=320000"
+    val response = executeRequest(buildRequest(url), streamClient) ?: return null
+    response.use { resp ->
+      if (!resp.isSuccessful) return null
+      val body = resp.body?.string() ?: return null
+      return try {
         val root = JsonParser.parseString(body).asJsonObject
-        val first = root.arr("data")?.firstOrNull()?.asJsonObject
-        val streamUrl = first?.str("url") ?: ""
-        val expires = first?.long("expires")?.let { it * 1000L }
-        StreamResource(url = streamUrl, expiresAtMs = expires)
+        val success = root.bool("success")
+        val message = root.str("message")
+        MusicAvailability(
+          success = success,
+          message = if (success == false) message else null
+        )
+      } catch (e: Exception) {
+        android.util.Log.e("ApiProvider", "解析可用性检查响应失败", e)
+        null
       }
     }
   }
@@ -578,6 +650,9 @@ private fun JsonObject.str(name: String): String? =
 
 private fun JsonObject.long(name: String): Long? =
   get(name)?.takeIf { it.isJsonPrimitive }?.asLong
+
+private fun JsonObject.bool(name: String): Boolean? =
+  get(name)?.takeIf { it.isJsonPrimitive }?.asBoolean
 
 private fun JsonElement?.firstOrNull(): JsonElement? =
   if (this != null && this.isJsonArray && this.asJsonArray.size() > 0) this.asJsonArray[0] else null

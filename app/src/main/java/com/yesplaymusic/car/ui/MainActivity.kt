@@ -270,7 +270,8 @@ class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavig
       }
       if (!isActive || requestId != playRequestId) return@launch
       if (stream.url.isBlank()) {
-        viewModel.statusText.postValue(getString(R.string.unplayable))
+        val message = stream.message?.takeIf { it.isNotBlank() } ?: getString(R.string.unplayable)
+        viewModel.statusText.postValue(message)
         return@launch
       }
       val player = controller ?: return@launch

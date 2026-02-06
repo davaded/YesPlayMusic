@@ -284,6 +284,16 @@ class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavig
     setDetailVisible(true)
   }
 
+  override fun openDailyDetail(tracks: List<Track>, item: CoverItem) {
+    val fragment = DailyDetailFragment.newInstance(tracks, item)
+    supportFragmentManager.beginTransaction()
+      .setReorderingAllowed(true)
+      .replace(binding.detailContainer.id, fragment)
+      .addToBackStack("daily_detail")
+      .commit()
+    setDetailVisible(true)
+  }
+
   override fun openMv(mvId: Long, title: String, artist: String) {
     if (mvId <= 0L) return
     val fragment = MvFragment.newInstance(mvId, title, artist)

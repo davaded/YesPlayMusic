@@ -217,9 +217,15 @@ class HomeFragment : Fragment() {
   }
 
   private fun openHeroDetail() {
-    // 每日推荐不跳转详情，直接播放
+    // 每日推荐跳转到详情页
     if (dailyRecommendTracks.isNotEmpty()) {
-      playHero()
+      val dailyItem = CoverItem(
+        id = 0L, // 每日推荐没有固定ID
+        title = getString(R.string.hero_daily_title),
+        subtitle = getString(R.string.hero_daily_count, dailyRecommendTracks.size),
+        coverUrl = null
+      )
+      (activity as? DetailNavigator)?.openDailyDetail(dailyRecommendTracks, dailyItem)
       return
     }
     val item = heroItem ?: return

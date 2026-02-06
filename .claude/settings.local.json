@@ -3,7 +3,11 @@
     "allow": [
       "Bash(tree:*)",
       "Bash(dir:*)",
-      "Bash(.gradlew.bat assembleDebug)"
+      "Bash(.gradlew.bat assembleDebug)",
+      "Bash(.gradlew assembleDebug)",
+      "Bash(./gradlew assembleDebug:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }

@@ -94,4 +94,8 @@
   <string name="login_failed">登录失败，请重试</string>
   <string name="mic_gain_label">Mic</string>
   <string name="mic_gain_value">x%.1f</string>
+  <string name="agc_label">AGC</string>
+  <string name="anti_howling_label">Anti-howl</string>
+  <string name="reverb_label">Reverb</string>
+  <string name="percent_value">%d%%</string>
 </resources>

@@ -188,5 +188,134 @@
         android:textColor="#CCFFFFFF"
         android:textSize="14sp" />
     </LinearLayout>
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="10dp"
+      android:gravity="center_vertical"
+      android:orientation="horizontal">
+
+      <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/agcSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/agc_label"
+        android:textColor="@color/textPrimary"
+        android:textSize="13sp" />
+
+      <com.google.android.material.slider.Slider
+        android:id="@+id/agcTargetSlider"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_weight="1"
+        android:stepSize="1"
+        android:value="18"
+        android:valueFrom="8"
+        android:valueTo="45"
+        app:thumbColor="@color/textPrimary"
+        app:thumbRadius="6dp"
+        app:trackColorActive="@color/primary"
+        app:trackColorInactive="#33FFFFFF"
+        app:trackHeight="4dp" />
+
+      <TextView
+        android:id="@+id/agcTargetValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/barlow_medium"
+        android:text="18%"
+        android:textColor="#CCFFFFFF"
+        android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="10dp"
+      android:gravity="center_vertical"
+      android:orientation="horizontal">
+
+      <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/antiHowlingSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/anti_howling_label"
+        android:textColor="@color/textPrimary"
+        android:textSize="13sp" />
+
+      <com.google.android.material.slider.Slider
+        android:id="@+id/antiHowlingSlider"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_weight="1"
+        android:stepSize="5"
+        android:value="55"
+        android:valueFrom="0"
+        android:valueTo="100"
+        app:thumbColor="@color/textPrimary"
+        app:thumbRadius="6dp"
+        app:trackColorActive="@color/primary"
+        app:trackColorInactive="#33FFFFFF"
+        app:trackHeight="4dp" />
+
+      <TextView
+        android:id="@+id/antiHowlingValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/barlow_medium"
+        android:text="55%"
+        android:textColor="#CCFFFFFF"
+        android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="10dp"
+      android:gravity="center_vertical"
+      android:orientation="horizontal">
+
+      <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/reverbSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/reverb_label"
+        android:textColor="@color/textPrimary"
+        android:textSize="13sp" />
+
+      <com.google.android.material.slider.Slider
+        android:id="@+id/reverbSlider"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_weight="1"
+        android:stepSize="1"
+        android:value="28"
+        android:valueFrom="0"
+        android:valueTo="65"
+        app:thumbColor="@color/textPrimary"
+        app:thumbRadius="6dp"
+        app:trackColorActive="@color/primary"
+        app:trackColorInactive="#33FFFFFF"
+        app:trackHeight="4dp" />
+
+      <TextView
+        android:id="@+id/reverbValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/barlow_medium"
+        android:text="28%"
+        android:textColor="#CCFFFFFF"
+        android:textSize="14sp" />
+    </LinearLayout>
   </LinearLayout>
 </FrameLayout>

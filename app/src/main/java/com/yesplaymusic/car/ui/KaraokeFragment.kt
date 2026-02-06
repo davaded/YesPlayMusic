@@ -67,7 +67,7 @@ class KaraokeFragment : Fragment() {
       parentFragmentManager.popBackStack()
     }
 
-    setupMicGainControls()
+    setupMicControls()
     checkAndRequestMicPermission()
 
     binding.playButton.setOnClickListener {
@@ -112,11 +112,53 @@ class KaraokeFragment : Fragment() {
     }
   }
 
-  private fun setupMicGainControls() {
+  private fun setupMicControls() {
     binding.micGainValue.text = getString(R.string.mic_gain_value, binding.micGainSlider.value)
     binding.micGainSlider.addOnChangeListener { _, value, _ ->
       binding.micGainValue.text = getString(R.string.mic_gain_value, value)
       micProcessor?.setMicGain(value)
+    }
+
+    binding.agcTargetValue.text = getString(
+      R.string.percent_value,
+      binding.agcTargetSlider.value.toInt()
+    )
+    binding.agcTargetSlider.isEnabled = binding.agcSwitch.isChecked
+    binding.agcSwitch.setOnCheckedChangeListener { _, isChecked ->
+      binding.agcTargetSlider.isEnabled = isChecked
+      micProcessor?.setAgcEnabled(isChecked)
+    }
+    binding.agcTargetSlider.addOnChangeListener { _, value, _ ->
+      binding.agcTargetValue.text = getString(R.string.percent_value, value.toInt())
+      micProcessor?.setAgcTargetLevel(value / 100.0f)
+    }
+
+    binding.antiHowlingValue.text = getString(
+      R.string.percent_value,
+      binding.antiHowlingSlider.value.toInt()
+    )
+    binding.antiHowlingSlider.isEnabled = binding.antiHowlingSwitch.isChecked
+    binding.antiHowlingSwitch.setOnCheckedChangeListener { _, isChecked ->
+      binding.antiHowlingSlider.isEnabled = isChecked
+      micProcessor?.setAntiHowlingEnabled(isChecked)
+    }
+    binding.antiHowlingSlider.addOnChangeListener { _, value, _ ->
+      binding.antiHowlingValue.text = getString(R.string.percent_value, value.toInt())
+      micProcessor?.setAntiHowlingStrength(value / 100.0f)
+    }
+
+    binding.reverbValue.text = getString(
+      R.string.percent_value,
+      binding.reverbSlider.value.toInt()
+    )
+    binding.reverbSlider.isEnabled = binding.reverbSwitch.isChecked
+    binding.reverbSwitch.setOnCheckedChangeListener { _, isChecked ->
+      binding.reverbSlider.isEnabled = isChecked
+      micProcessor?.setReverbEnabled(isChecked)
+    }
+    binding.reverbSlider.addOnChangeListener { _, value, _ ->
+      binding.reverbValue.text = getString(R.string.percent_value, value.toInt())
+      micProcessor?.setReverbMix(value / 100.0f)
     }
   }
 
@@ -230,6 +272,12 @@ class KaraokeFragment : Fragment() {
       micProcessor = MicrophoneProcessor()
     }
     micProcessor?.setMicGain(binding.micGainSlider.value)
+    micProcessor?.setAgcEnabled(binding.agcSwitch.isChecked)
+    micProcessor?.setAgcTargetLevel(binding.agcTargetSlider.value / 100.0f)
+    micProcessor?.setAntiHowlingEnabled(binding.antiHowlingSwitch.isChecked)
+    micProcessor?.setAntiHowlingStrength(binding.antiHowlingSlider.value / 100.0f)
+    micProcessor?.setReverbEnabled(binding.reverbSwitch.isChecked)
+    micProcessor?.setReverbMix(binding.reverbSlider.value / 100.0f)
     val success = micProcessor?.start() ?: false
     if (success) {
       Toast.makeText(requireContext(), getString(R.string.mic_enabled), Toast.LENGTH_SHORT).show()

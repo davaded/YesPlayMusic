@@ -115,6 +115,18 @@
           android:layout_marginTop="28dp"
           android:background="#0DFFFFFF" />
 
+        <!-- K歌模式按钮 -->
+        <com.google.android.material.button.MaterialButton
+          android:id="@+id/karaokeButton"
+          style="@style/Widget.Yes.IconButton.Ghost"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
+          android:layout_marginTop="16dp"
+          android:contentDescription="@string/karaoke_mode"
+          app:icon="@drawable/ic_mic_24"
+          app:iconSize="22dp"
+          app:iconTint="@color/textPrimary" />
+
       </LinearLayout>
 
     </FrameLayout>

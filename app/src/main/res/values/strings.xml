@@ -56,6 +56,7 @@
   <string name="watch_mv">观看 MV</string>
   <string name="mv_unavailable">无 MV</string>
   <string name="lyrics_empty">暂无歌词</string>
+  <string name="karaoke_mode">K歌模式</string>
   <string name="lyrics_title">歌词</string>
   <string name="song_info_title">歌曲信息</string>
   <string name="info_artist_label">艺人：</string>

@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
-class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavigator, LoginFragment.LoginCallback {
+class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavigator, LoginFragment.LoginCallback, KaraokeNavigator {
 
   private lateinit var binding: ActivityMainBinding
   private lateinit var viewModel: PlaybackViewModel
@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavig
   private val provider = ProviderRegistry.get()
   private val queue = mutableListOf<Track>()
   private var queueIndex: Int = -1
+  private var hideMiniPlayerForKaraoke = false
 
   private val handler = Handler(Looper.getMainLooper())
   private val progressRunnable = object : Runnable {
@@ -309,6 +310,17 @@ class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavig
     setDetailVisible(true)
   }
 
+  override fun openKaraoke() {
+    hideMiniPlayerForKaraoke = true
+    val fragment = KaraokeFragment()
+    supportFragmentManager.beginTransaction()
+      .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+      .replace(binding.detailContainer.id, fragment)
+      .addToBackStack("karaoke")
+      .commit()
+    setDetailVisible(true, hideMiniPlayer = true)
+  }
+
   private fun updatePlaybackState() {
     val player = controller ?: return
     val isPlaying = player.isPlaying
@@ -325,18 +337,25 @@ class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavig
   }
 
   private fun updateDetailVisibility() {
-    setDetailVisible(supportFragmentManager.backStackEntryCount > 0)
+    // 退出详情页时重置 K歌模式标志
+    if (supportFragmentManager.backStackEntryCount == 0) {
+      hideMiniPlayerForKaraoke = false
+    }
+    setDetailVisible(supportFragmentManager.backStackEntryCount > 0, hideMiniPlayerForKaraoke)
   }
 
-  private fun setDetailVisible(hasDetail: Boolean) {
+  private fun setDetailVisible(hasDetail: Boolean, hideMiniPlayer: Boolean = false) {
     binding.detailContainer.visibility = if (hasDetail) View.VISIBLE else View.GONE
     binding.viewPager.visibility = if (hasDetail) View.GONE else View.VISIBLE
     binding.tabLayout.visibility = if (hasDetail) View.GONE else View.VISIBLE
     binding.topBar.visibility = if (hasDetail) View.GONE else View.VISIBLE
+    binding.miniPlayerBar.visibility = if (hideMiniPlayer) View.GONE else View.VISIBLE
   }
 
   private fun updateMiniPlayer(track: Track?) {
-    binding.miniPlayerBar.visibility = View.VISIBLE
+    if (!hideMiniPlayerForKaraoke) {
+      binding.miniPlayerBar.visibility = View.VISIBLE
+    }
     if (track == null) {
       binding.miniTitle.text = getString(R.string.not_playing)
       binding.miniSubtitle.text = ""

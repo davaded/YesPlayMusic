@@ -47,6 +47,7 @@ class PlayerFragment : Fragment() {
     binding.playButton.setOnClickListener { (activity as? PlaybackHost)?.togglePlay() }
     binding.prevButton.setOnClickListener { (activity as? PlaybackHost)?.skipPrev() }
     binding.nextButton.setOnClickListener { (activity as? PlaybackHost)?.skipNext() }
+    binding.karaokeButton.setOnClickListener { (activity as? KaraokeNavigator)?.openKaraoke() }
 
     binding.seekBar.addOnChangeListener { _: Slider, value: Float, fromUser: Boolean ->
       if (fromUser) {

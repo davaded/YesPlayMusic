@@ -90,6 +90,10 @@ class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavig
     val pagerAdapter = MainPagerAdapter(this)
     binding.viewPager.adapter = pagerAdapter
     binding.viewPager.offscreenPageLimit = 5
+    // 优化切换流畅度：减少过度绘制
+    binding.viewPager.setPageTransformer { page, position ->
+      page.alpha = 1f - kotlin.math.abs(position) * 0.3f
+    }
     TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
       tab.text = when (position) {
         0 -> getString(R.string.tab_home)

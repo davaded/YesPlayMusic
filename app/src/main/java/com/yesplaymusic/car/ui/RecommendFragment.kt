@@ -71,7 +71,7 @@ class RecommendFragment : Fragment() {
   }
 
   private fun loadTags() {
-    lifecycleScope.launch {
+    viewLifecycleOwner.lifecycleScope.launch {
       val tags = withContext(Dispatchers.IO) { provider.getPlaylistHotTags() }
       withContext(Dispatchers.Main) {
         binding.tagsContainer.removeAllViews()
@@ -117,7 +117,7 @@ class RecommendFragment : Fragment() {
   private fun loadData() {
     binding.loadingIndicator.visibility = View.VISIBLE
 
-    lifecycleScope.launch {
+    viewLifecycleOwner.lifecycleScope.launch {
       val highqualityDeferred = async(Dispatchers.IO) { provider.getHighqualityPlaylists(10, currentTag) }
       val hotDeferred = async(Dispatchers.IO) { provider.getTopPlaylists(20, "hot", currentTag) }
 

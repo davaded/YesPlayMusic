@@ -117,7 +117,7 @@ class MediaDetailFragment : Fragment() {
     binding.detailList.visibility = View.GONE
     binding.playAllButton.isEnabled = false
 
-    lifecycleScope.launch {
+    viewLifecycleOwner.lifecycleScope.launch {
       val detail = withContext(Dispatchers.IO) {
         when (type) {
           MediaType.PLAYLIST -> provider.getPlaylistDetail(id)

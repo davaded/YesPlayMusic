@@ -27,6 +27,13 @@ class MicrophoneProcessor {
   private var processingThread: Thread? = null
 
   private val minBufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_IN, AUDIO_FORMAT)
+    .takeIf { it > 0 }
+    ?: run {
+      // 部分设备会返回错误码，回退到 100ms 缓冲避免崩溃
+      val fallback = SAMPLE_RATE / 10
+      Log.w(TAG, "getMinBufferSize 返回非法值，使用回退缓冲: $fallback")
+      fallback
+    }
 
   /**
    * 开始实时音频处理

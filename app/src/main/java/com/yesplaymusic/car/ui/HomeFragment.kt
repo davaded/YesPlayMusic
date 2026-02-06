@@ -117,7 +117,7 @@ class HomeFragment : Fragment() {
     // 显示 loading
     binding.loadingIndicator.visibility = View.VISIBLE
 
-    lifecycleScope.launch {
+    viewLifecycleOwner.lifecycleScope.launch {
       if (isLoggedIn && userInfo != null) {
         // 已登录：使用个性化推荐
         val dailySongsDeferred = async(Dispatchers.IO) { provider.getDailyRecommendSongs() }
@@ -240,7 +240,7 @@ class HomeFragment : Fragment() {
     }
     // 否则获取歌单/专辑详情播放
     val item = heroItem ?: return
-    lifecycleScope.launch {
+    viewLifecycleOwner.lifecycleScope.launch {
       val detail = withContext(Dispatchers.IO) {
         when (heroType) {
           MediaType.PLAYLIST -> provider.getPlaylistDetail(item.id)

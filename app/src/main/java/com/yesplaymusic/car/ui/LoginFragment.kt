@@ -61,7 +61,7 @@ class LoginFragment : Fragment() {
 
         Log.d(TAG, "开始生成二维码...")
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             val key = provider.getQrKey()
             if (key == null) {
                 Log.e(TAG, "获取二维码 key 失败")
@@ -95,7 +95,7 @@ class LoginFragment : Fragment() {
     private fun startPolling(key: String) {
         pollJob?.cancel()
         Log.d(TAG, "开始轮询扫码状态, key: $key")
-        pollJob = lifecycleScope.launch {
+        pollJob = viewLifecycleOwner.lifecycleScope.launch {
             while (isActive) {
                 delay(2000) // 每2秒检查一次
                 val result = provider.checkQrStatus(key)
@@ -133,7 +133,7 @@ class LoginFragment : Fragment() {
         cookieStore.saveCookie(cookie)
         provider.setCookie(cookie)
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             try {
                 // 获取用户信息
                 Log.d(TAG, "获取用户信息...")

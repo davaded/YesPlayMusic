@@ -127,7 +127,7 @@ class SearchFragment : Fragment() {
     binding.searchStatus.visibility = View.VISIBLE
     binding.searchStatus.text = getString(R.string.searching)
 
-    lifecycleScope.launch {
+    viewLifecycleOwner.lifecycleScope.launch {
       when (searchType) {
         SearchType.SONGS -> {
           val list = withContext(Dispatchers.IO) { provider.search(keyword, limit = 20) }

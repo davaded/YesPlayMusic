@@ -25,6 +25,7 @@ class MvFragment : Fragment() {
   private val viewModel: PlaybackViewModel by activityViewModels()
 
   private var player: ExoPlayer? = null
+  private var pendingMvUrl: String? = null
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
     _binding = FragmentMvBinding.inflate(inflater, container, false)
@@ -51,16 +52,22 @@ class MvFragment : Fragment() {
       (activity as? PlaybackHost)?.togglePlay()
     }
 
-    lifecycleScope.launch {
+    viewLifecycleOwner.lifecycleScope.launch {
       binding.mvStatus.visibility = View.VISIBLE
       binding.mvStatus.text = getString(R.string.detail_loading)
-      val url = withContext(Dispatchers.IO) { provider.getMvUrl(mvId) }
+      val url = try {
+        withContext(Dispatchers.IO) { provider.getMvUrl(mvId) }
+      } catch (e: Exception) {
+        android.util.Log.e("MvFragment", "获取 MV 地址失败: mvId=$mvId", e)
+        ""
+      }
       if (!isAdded) return@launch
       if (url.isBlank()) {
         binding.mvStatus.text = getString(R.string.mv_unavailable)
         return@launch
       }
-      startPlayback(url)
+      pendingMvUrl = url
+      startPlaybackIfReady()
     }
   }
 
@@ -68,13 +75,17 @@ class MvFragment : Fragment() {
     super.onStart()
     player = ExoPlayer.Builder(requireContext()).build()
     binding.mvPlayerView.player = player
+    startPlaybackIfReady()
   }
 
-  private fun startPlayback(url: String) {
+  private fun startPlaybackIfReady() {
+    val url = pendingMvUrl ?: return
+    val currentPlayer = player ?: return
     val mediaItem = MediaItem.fromUri(url)
-    player?.setMediaItem(mediaItem)
-    player?.prepare()
-    player?.playWhenReady = true
+    currentPlayer.setMediaItem(mediaItem)
+    currentPlayer.prepare()
+    currentPlayer.playWhenReady = true
+    pendingMvUrl = null
     binding.mvStatus.visibility = View.GONE
   }
 

@@ -27,11 +27,17 @@ import com.yesplaymusic.car.playback.PlaybackService
 import com.yesplaymusic.car.playback.PlaybackViewModel
 import coil.load
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavigator, LoginFragment.LoginCallback, KaraokeNavigator {
+  companion object {
+    private const val PLAY_START_TIMEOUT_MS = 20_000L
+  }
 
   private lateinit var binding: ActivityMainBinding
   private lateinit var viewModel: PlaybackViewModel
@@ -44,6 +50,9 @@ class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavig
   private val queue = mutableListOf<Track>()
   private var queueIndex: Int = -1
   private var hideMiniPlayerForKaraoke = false
+  private var playJob: Job? = null
+  private var playStartWatchdogJob: Job? = null
+  private var playRequestId: Long = 0L
 
   private val handler = Handler(Looper.getMainLooper())
   private val progressRunnable = object : Runnable {
@@ -57,6 +66,9 @@ class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavig
 
   private val playerListener = object : Player.Listener {
     override fun onPlaybackStateChanged(playbackState: Int) {
+      if (playbackState == Player.STATE_READY || playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
+        stopPlayStartWatchdog()
+      }
       updatePlaybackState()
       if (playbackState == Player.STATE_ENDED) {
         skipNext()
@@ -64,6 +76,9 @@ class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavig
     }
 
     override fun onIsPlayingChanged(isPlaying: Boolean) {
+      if (isPlaying) {
+        stopPlayStartWatchdog()
+      }
       viewModel.isPlaying.postValue(isPlaying)
       updatePlaybackState()
     }
@@ -73,6 +88,7 @@ class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavig
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+      stopPlayStartWatchdog()
       updatePlaybackState()
     }
   }
@@ -194,16 +210,23 @@ class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavig
     controllerFuture = MediaController.Builder(this, token).buildAsync()
     controllerFuture?.addListener(
       {
-        controller = controllerFuture?.get()
-        controller?.addListener(playerListener)
-        updatePlaybackState()
-        handler.post(progressRunnable)
+        try {
+          controller = controllerFuture?.get()
+          controller?.addListener(playerListener)
+          updatePlaybackState()
+          handler.post(progressRunnable)
+        } catch (e: Exception) {
+          android.util.Log.e("MainActivity", "连接播放控制器失败", e)
+        }
       },
       ContextCompat.getMainExecutor(this)
     )
   }
 
   private fun disconnectController() {
+    playJob?.cancel()
+    playJob = null
+    stopPlayStartWatchdog()
     handler.removeCallbacks(progressRunnable)
     controller?.removeListener(playerListener)
     controllerFuture?.let { MediaController.releaseFuture(it) }
@@ -215,6 +238,7 @@ class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavig
     if (tracks.isEmpty() || index !in tracks.indices) return
     queue.clear()
     queue.addAll(tracks)
+    
     queueIndex = index
     viewModel.queue.postValue(queue.toList())
     viewModel.queueIndex.postValue(queueIndex)
@@ -226,20 +250,30 @@ class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavig
   }
 
   private fun playTrackAt(index: Int) {
-    val player = controller ?: return
     if (index !in queue.indices) return
+    stopPlayStartWatchdog()
     val track = queue[index]
     queueIndex = index
     viewModel.queueIndex.postValue(queueIndex)
     viewModel.currentTrack.postValue(track)
 
-    lifecycleScope.launch {
+    playJob?.cancel()
+    val requestId = ++playRequestId
+    playJob = lifecycleScope.launch {
       viewModel.statusText.postValue(getString(R.string.resolving))
-      val stream = withContext(Dispatchers.IO) { provider.resolveStream(track.id) }
+      val stream = try {
+        withContext(Dispatchers.IO) { provider.resolveStream(track.id) }
+      } catch (e: Exception) {
+        android.util.Log.e("MainActivity", "解析播放地址失败: trackId=${track.id}", e)
+        viewModel.statusText.postValue(getString(R.string.unplayable))
+        return@launch
+      }
+      if (!isActive || requestId != playRequestId) return@launch
       if (stream.url.isBlank()) {
         viewModel.statusText.postValue(getString(R.string.unplayable))
         return@launch
       }
+      val player = controller ?: return@launch
       val mediaItem = MediaItem.Builder()
         .setMediaId(track.id.toString())
         .setUri(stream.url)
@@ -252,10 +286,40 @@ class MainActivity : AppCompatActivity(), PlaybackHost, DetailNavigator, MvNavig
             .build()
         )
         .build()
-      player.setMediaItem(mediaItem)
-      player.prepare()
-      player.play()
+      try {
+        player.setMediaItem(mediaItem)
+        player.prepare()
+        player.play()
+        startPlayStartWatchdog(requestId)
+      } catch (e: Exception) {
+        android.util.Log.e("MainActivity", "设置播放器媒体项失败: trackId=${track.id}", e)
+        viewModel.statusText.postValue(getString(R.string.unplayable))
+      }
     }
+  }
+
+  private fun startPlayStartWatchdog(requestId: Long) {
+    playStartWatchdogJob?.cancel()
+    playStartWatchdogJob = lifecycleScope.launch {
+      delay(PLAY_START_TIMEOUT_MS)
+      if (!isActive || requestId != playRequestId) return@launch
+      val player = controller ?: return@launch
+      if (player.playbackState != Player.STATE_BUFFERING) return@launch
+      val hasNext = queueIndex + 1 < queue.size
+      android.util.Log.w("MainActivity", "播放超时: requestId=$requestId, queueIndex=$queueIndex, hasNext=$hasNext")
+      if (hasNext) {
+        viewModel.statusText.postValue(getString(R.string.unplayable))
+        skipNext()
+      } else {
+        player.stop()
+        viewModel.statusText.postValue(getString(R.string.unplayable))
+      }
+    }
+  }
+
+  private fun stopPlayStartWatchdog() {
+    playStartWatchdogJob?.cancel()
+    playStartWatchdogJob = null
   }
 
   override fun togglePlay() {

@@ -178,7 +178,7 @@ class KaraokeFragment : Fragment() {
     if (lines.isEmpty()) return -1
     var low = 0
     var high = lines.size - 1
-    var result = 0
+    var result = -1
     while (low <= high) {
       val mid = (low + high) / 2
       val time = lines[mid].timeMs

@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.concurrent.TimeUnit
@@ -19,6 +20,10 @@ class ApiEnhancedProvider(
     .writeTimeout(30, TimeUnit.SECONDS)
     .build()
 ) : MusicProvider {
+
+  private val streamClient: OkHttpClient = client.newBuilder()
+    .callTimeout(15, TimeUnit.SECONDS)
+    .build()
 
   private var cookie: String? = null
 
@@ -56,11 +61,20 @@ class ApiEnhancedProvider(
     return builder.build()
   }
 
+  private fun executeRequest(request: Request, callClient: OkHttpClient = client): Response? {
+    return try {
+      callClient.newCall(request).execute()
+    } catch (e: Exception) {
+      android.util.Log.e("ApiProvider", "请求失败: ${request.url}", e)
+      null
+    }
+  }
+
   override suspend fun search(keyword: String, limit: Int): List<Track> {
     return withContext(Dispatchers.IO) {
       val encoded = URLEncoder.encode(keyword, StandardCharsets.UTF_8.toString())
       val url = "$baseUrl/search?keywords=$encoded&limit=$limit"
-      val response = client.newCall(Request.Builder().url(url).build()).execute()
+      val response = executeRequest(Request.Builder().url(url).build()) ?: return@withContext emptyList()
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext emptyList()
         val body = resp.body?.string() ?: return@withContext emptyList()
@@ -87,7 +101,7 @@ class ApiEnhancedProvider(
   override suspend fun resolveStream(trackId: Long): StreamResource {
     return withContext(Dispatchers.IO) {
       val url = "$baseUrl/song/url?id=$trackId&br=320000"
-      val response = client.newCall(buildRequest(url)).execute()
+      val response = executeRequest(buildRequest(url), streamClient) ?: return@withContext StreamResource(url = "")
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext StreamResource(url = "")
         val body = resp.body?.string() ?: return@withContext StreamResource(url = "")
@@ -107,7 +121,7 @@ class ApiEnhancedProvider(
   override suspend fun getPlaylistDetail(playlistId: Long): MediaDetail? {
     return withContext(Dispatchers.IO) {
       val url = "$baseUrl/playlist/detail?id=$playlistId"
-      val response = client.newCall(Request.Builder().url(url).build()).execute()
+      val response = executeRequest(Request.Builder().url(url).build()) ?: return@withContext null
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext null
         val body = resp.body?.string() ?: return@withContext null
@@ -130,7 +144,7 @@ class ApiEnhancedProvider(
   override suspend fun getAlbumDetail(albumId: Long): MediaDetail? {
     return withContext(Dispatchers.IO) {
       val url = "$baseUrl/album?id=$albumId"
-      val response = client.newCall(Request.Builder().url(url).build()).execute()
+      val response = executeRequest(Request.Builder().url(url).build()) ?: return@withContext null
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext null
         val body = resp.body?.string() ?: return@withContext null
@@ -155,7 +169,7 @@ class ApiEnhancedProvider(
   override suspend fun getLyrics(trackId: Long): List<LyricLine> {
     return withContext(Dispatchers.IO) {
       val url = "$baseUrl/lyric?id=$trackId"
-      val response = client.newCall(Request.Builder().url(url).build()).execute()
+      val response = executeRequest(Request.Builder().url(url).build()) ?: return@withContext emptyList()
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext emptyList()
         val body = resp.body?.string() ?: return@withContext emptyList()
@@ -171,7 +185,7 @@ class ApiEnhancedProvider(
   override suspend fun getSongDetail(trackId: Long): SongDetail? {
     return withContext(Dispatchers.IO) {
       val url = "$baseUrl/song/detail?ids=$trackId"
-      val response = client.newCall(Request.Builder().url(url).build()).execute()
+      val response = executeRequest(Request.Builder().url(url).build()) ?: return@withContext null
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext null
         val body = resp.body?.string() ?: return@withContext null
@@ -200,7 +214,7 @@ class ApiEnhancedProvider(
     if (mvId <= 0L) return ""
     return withContext(Dispatchers.IO) {
       val url = "$baseUrl/mv/url?id=$mvId"
-      val response = client.newCall(Request.Builder().url(url).build()).execute()
+      val response = executeRequest(Request.Builder().url(url).build()) ?: return@withContext ""
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext ""
         val body = resp.body?.string() ?: return@withContext ""
@@ -213,7 +227,7 @@ class ApiEnhancedProvider(
   override suspend fun getRecommendPlaylists(limit: Int): List<CoverItem> {
     return withContext(Dispatchers.IO) {
       val url = "$baseUrl/personalized?limit=$limit"
-      val response = client.newCall(Request.Builder().url(url).build()).execute()
+      val response = executeRequest(Request.Builder().url(url).build()) ?: return@withContext emptyList()
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext emptyList()
         val body = resp.body?.string() ?: return@withContext emptyList()
@@ -236,7 +250,7 @@ class ApiEnhancedProvider(
   override suspend fun getNewAlbums(limit: Int): List<CoverItem> {
     return withContext(Dispatchers.IO) {
       val url = "$baseUrl/top/album?limit=$limit"
-      val response = client.newCall(Request.Builder().url(url).build()).execute()
+      val response = executeRequest(Request.Builder().url(url).build()) ?: return@withContext emptyList()
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext emptyList()
         val body = resp.body?.string() ?: return@withContext emptyList()
@@ -260,7 +274,7 @@ class ApiEnhancedProvider(
   override suspend fun getPersonalizedNewSongs(limit: Int): List<CoverItem> {
     return withContext(Dispatchers.IO) {
       val url = "$baseUrl/personalized/newsong?limit=$limit"
-      val response = client.newCall(buildRequest(url)).execute()
+      val response = executeRequest(buildRequest(url)) ?: return@withContext emptyList()
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext emptyList()
         val body = resp.body?.string() ?: return@withContext emptyList()
@@ -290,7 +304,7 @@ class ApiEnhancedProvider(
     return withContext(Dispatchers.IO) {
       val timestamp = System.currentTimeMillis()
       val url = "$baseUrl/login/qr/key?timestamp=$timestamp"
-      val response = client.newCall(Request.Builder().url(url).build()).execute()
+      val response = executeRequest(Request.Builder().url(url).build()) ?: return@withContext null
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext null
         val body = resp.body?.string() ?: return@withContext null
@@ -304,7 +318,7 @@ class ApiEnhancedProvider(
     return withContext(Dispatchers.IO) {
       val timestamp = System.currentTimeMillis()
       val url = "$baseUrl/login/qr/create?key=$key&qrimg=true&timestamp=$timestamp"
-      val response = client.newCall(Request.Builder().url(url).build()).execute()
+      val response = executeRequest(Request.Builder().url(url).build()) ?: return@withContext null
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext null
         val body = resp.body?.string() ?: return@withContext null
@@ -318,7 +332,7 @@ class ApiEnhancedProvider(
     return withContext(Dispatchers.IO) {
       val timestamp = System.currentTimeMillis()
       val url = "$baseUrl/login/qr/check?key=$key&timestamp=$timestamp"
-      val response = client.newCall(Request.Builder().url(url).build()).execute()
+      val response = executeRequest(Request.Builder().url(url).build()) ?: return@withContext QrCheckResult(QrStatus.EXPIRED)
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext QrCheckResult(QrStatus.EXPIRED)
         val body = resp.body?.string() ?: return@withContext QrCheckResult(QrStatus.EXPIRED)
@@ -337,7 +351,7 @@ class ApiEnhancedProvider(
       val timestamp = System.currentTimeMillis()
       // 使用 /user/account 接口获取用户信息
       val url = "$baseUrl/user/account?timestamp=$timestamp"
-      val response = client.newCall(buildRequest(url)).execute()
+      val response = executeRequest(buildRequest(url)) ?: return@withContext LoginStatus(false)
       response.use { resp ->
         if (!resp.isSuccessful) {
           android.util.Log.e("ApiProvider", "getLoginStatus 请求失败: ${resp.code}")
@@ -368,7 +382,7 @@ class ApiEnhancedProvider(
   override suspend fun getUserLikedPlaylist(userId: Long): CoverItem? {
     return withContext(Dispatchers.IO) {
       val url = "$baseUrl/user/playlist?uid=$userId&limit=1"
-      val response = client.newCall(buildRequest(url)).execute()
+      val response = executeRequest(buildRequest(url)) ?: return@withContext null
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext null
         val body = resp.body?.string() ?: return@withContext null
@@ -391,7 +405,7 @@ class ApiEnhancedProvider(
   override suspend fun getDailyRecommendPlaylists(): List<CoverItem> {
     return withContext(Dispatchers.IO) {
       val url = "$baseUrl/recommend/resource"
-      val response = client.newCall(buildRequest(url)).execute()
+      val response = executeRequest(buildRequest(url)) ?: return@withContext emptyList()
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext emptyList()
         val body = resp.body?.string() ?: return@withContext emptyList()
@@ -414,7 +428,7 @@ class ApiEnhancedProvider(
   override suspend fun getDailyRecommendSongs(): List<Track> {
     return withContext(Dispatchers.IO) {
       val url = "$baseUrl/recommend/songs"
-      val response = client.newCall(buildRequest(url)).execute()
+      val response = executeRequest(buildRequest(url)) ?: return@withContext emptyList()
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext emptyList()
         val body = resp.body?.string() ?: return@withContext emptyList()
@@ -431,7 +445,7 @@ class ApiEnhancedProvider(
   override suspend fun getUserPlaylists(userId: Long): List<CoverItem> {
     return withContext(Dispatchers.IO) {
       val url = "$baseUrl/user/playlist?uid=$userId&limit=30"
-      val response = client.newCall(buildRequest(url)).execute()
+      val response = executeRequest(buildRequest(url)) ?: return@withContext emptyList()
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext emptyList()
         val body = resp.body?.string() ?: return@withContext emptyList()
@@ -457,7 +471,7 @@ class ApiEnhancedProvider(
     return withContext(Dispatchers.IO) {
       val encodedCat = URLEncoder.encode(cat, StandardCharsets.UTF_8.toString())
       val url = "$baseUrl/top/playlist?limit=$limit&order=$order&cat=$encodedCat"
-      val response = client.newCall(buildRequest(url)).execute()
+      val response = executeRequest(buildRequest(url)) ?: return@withContext emptyList()
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext emptyList()
         val body = resp.body?.string() ?: return@withContext emptyList()
@@ -487,7 +501,7 @@ class ApiEnhancedProvider(
     return withContext(Dispatchers.IO) {
       val encodedCat = URLEncoder.encode(cat, StandardCharsets.UTF_8.toString())
       val url = "$baseUrl/top/playlist/highquality?limit=$limit&cat=$encodedCat"
-      val response = client.newCall(buildRequest(url)).execute()
+      val response = executeRequest(buildRequest(url)) ?: return@withContext emptyList()
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext emptyList()
         val body = resp.body?.string() ?: return@withContext emptyList()
@@ -510,7 +524,7 @@ class ApiEnhancedProvider(
   override suspend fun getPlaylistHotTags(): List<String> {
     return withContext(Dispatchers.IO) {
       val url = "$baseUrl/playlist/hot"
-      val response = client.newCall(buildRequest(url)).execute()
+      val response = executeRequest(buildRequest(url)) ?: return@withContext emptyList()
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext emptyList()
         val body = resp.body?.string() ?: return@withContext emptyList()
@@ -527,7 +541,7 @@ class ApiEnhancedProvider(
     return withContext(Dispatchers.IO) {
       val encoded = URLEncoder.encode(keyword, StandardCharsets.UTF_8.toString())
       val url = "$baseUrl/cloudsearch?keywords=$encoded&type=1000&limit=$limit"
-      val response = client.newCall(buildRequest(url)).execute()
+      val response = executeRequest(buildRequest(url)) ?: return@withContext emptyList()
       response.use { resp ->
         if (!resp.isSuccessful) return@withContext emptyList()
         val body = resp.body?.string() ?: return@withContext emptyList()
